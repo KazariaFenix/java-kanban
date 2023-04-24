@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class EpicTask extends Task{
+public class EpicTask extends Task {
     private ArrayList<Integer> subtaskList = new ArrayList<>();
 
     public EpicTask(String nameTask, String descriptionTask, int idTask, String statusTask) {
@@ -15,7 +15,7 @@ public class EpicTask extends Task{
         subtaskList.add(subId);
     }
 
-    public void addCopyArrayList(ArrayList<Integer> newSubtaskList) {
-        subtaskList.addAll(newSubtaskList);
+    public void removeSubtaskList(Integer subId) {
+        subtaskList.remove(subId);
     }
 }

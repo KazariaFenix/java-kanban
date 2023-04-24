@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TaskManager {
@@ -20,92 +21,60 @@ public class TaskManager {
     }
 
     public void addSubtask(Subtask subtask) {
-        if (storingEpic.containsKey(subtask.epicId)) {
+        if (storingEpic.containsKey(subtask.getEpicId())) {
             subtask.setIdTask(id);
             id++;
             storingSubtask.put(subtask.getIdTask(), subtask);
             EpicTask epicTask = storingEpic.get(subtask.getEpicId());
             epicTask.addSubtuskList(subtask.getIdTask());
-            for (Integer idSub : epicTask.getSubtaskList()) {
-                Subtask sub = storingSubtask.get(idSub);
-                if (epicTask.getSubtaskList().size() >= 2) {
-                    if (!(epicTask.getStatusTask().equals(sub.getStatusTask()))) {
-                        epicTask.setStatusTask("IN_PROGRESS");
-                    }
-                } else {
-                    epicTask.setStatusTask(sub.getStatusTask());
-                }
-            }
+            fillEpicStatus(subtask.getEpicId());
         }
     }
 
-    public String printListSimpleTask() {
-        if (!(storingSimple.isEmpty())) {
-            for (Integer idTask : storingSimple.keySet()) {
-                return storingSimple.get(idTask).toString();
-            }
-        }
-        return "Простых задач не найдено";
+    public ArrayList<SimpleTask> getArrayListSimpleTask() {
+        return new ArrayList<>(storingSimple.values());
     }
 
-    public String printListEpicTaskandSubtask() { // Подзадачи без епиков печатать будет странно, потому объединил
-        String printTask = "";                    // два метода для печати в одном
-        if (!(storingEpic.isEmpty())) {
-            for (Integer idTask : storingEpic.keySet()) {
-                EpicTask epicTask = storingEpic.get(idTask);
-                printTask += epicTask.toString();
-                for (Integer subId : epicTask.getSubtaskList()) {
-                    if (storingSubtask.get(subId) != null) {
-                        printTask += storingSubtask.get(subId).toString();
-                    }
-                }
-            }
-            return printTask;
-        }
-        return "Сложносоставных задач с подзадачами нет";
+    public ArrayList<EpicTask> getArrayListEpicTask() {
+        return new ArrayList<>(storingEpic.values());
+    }
+
+    public ArrayList<Subtask> getArrayListSubtask() {
+        return new ArrayList<>(storingSubtask.values());
     }
 
     public void clearSimpleTask() {
-        if (!(storingSimple.isEmpty())) {
+        if (!storingSimple.isEmpty()) { //насчет лишних скобочек, разве их не добавляют для удобства читаемости кода?
             storingSimple.clear();
         }
     }
 
     public void clearEpicTask() {
-        if (!(storingEpic.isEmpty())) {
+        if (!storingEpic.isEmpty()) {
             storingEpic.clear();
             storingSubtask.clear();
         }
     }
 
     public void clearSubtask() {
-        if (!(storingSubtask.isEmpty())) {
+        if (!storingSubtask.isEmpty()) {
             storingSubtask.clear();
+            for (EpicTask epicTask : storingEpic.values()) {
+                epicTask.setStatusTask("NEW");
+            }
         }
     }
 
     public SimpleTask getIdSimple(int idSimple) {
-        if (storingSimple.containsKey(idSimple)) {
-            return storingSimple.get(idSimple);
-        }
-        System.out.println("Задача не найдена");
-        return null;
+        return storingSimple.get(idSimple);
     }
 
     public EpicTask getIdEpic(int idEpic) {
-        if (storingEpic.containsKey(idEpic)) {
-            return storingEpic.get(idEpic);
-        }
-        System.out.println("Задача не найдена");
-        return null;
+        return storingEpic.get(idEpic);
     }
 
     public Subtask getIdSub(int idSub) {
-        if (storingSubtask.containsKey(idSub)) {
-            return storingSubtask.get(idSub);
-        }
-        System.out.println("Задача не найдена");
-        return null;
+        return storingSubtask.get(idSub);
     }
 
     public void deleteIdSimple(int simpleId) {
@@ -126,22 +95,24 @@ public class TaskManager {
 
     public void deleteIdSubtask(int subId) {
         if (storingSubtask.containsKey(subId)) {
+            Subtask subtask = storingSubtask.get(subId);
+            EpicTask epicTask = getIdEpic(subtask.getEpicId());
+            epicTask.removeSubtaskList(subtask.getIdTask());
             storingSubtask.remove(subId);
+            fillEpicStatus(subtask.getEpicId());
         }
     }
 
-    public String printArrayListSubOfEpicTask(int epicId) {
+    public ArrayList<Subtask> getArrayListSubOfEpicTask(int epicId) {
+        ArrayList<Subtask> arrayListSubOfEpic = new ArrayList<>();
+        ;
         if (storingEpic.containsKey(epicId)) {
-            String subtask = "Список подзадач, многосоставной задачи под номером id " + epicId + ":\n";
             EpicTask epicTask = storingEpic.get(epicId);
             for (Integer subId : epicTask.getSubtaskList()) {
-                if (storingSubtask.get(subId) != null) {
-                    subtask += storingSubtask.get(subId).toString();
-                }
+                arrayListSubOfEpic.add(storingSubtask.get(subId));
             }
-            return subtask;
         }
-        return "Многосостовная задача не найдена";
+        return arrayListSubOfEpic;
     }
 
     public void updateSimpleTask(SimpleTask simpleTask) {
@@ -153,38 +124,47 @@ public class TaskManager {
     public void updateEpicTask(EpicTask epicTask) {
         if (storingEpic.containsKey(epicTask.getIdTask())) {
             EpicTask oldEpicTask = storingEpic.get(epicTask.getIdTask());
-            epicTask.setStatusTask(oldEpicTask.getStatusTask());
-            storingEpic.put(epicTask.getIdTask(), epicTask);
-            epicTask.addCopyArrayList(oldEpicTask.getSubtaskList());
+            oldEpicTask.setDescriptionTask(epicTask.getDescriptionTask());
+            oldEpicTask.setNameTask(epicTask.getNameTask());
         }
     }
 
     public void updateSubtask(Subtask subtask) {
         if (storingSubtask.containsKey(subtask.getIdTask())) {
             storingSubtask.put(subtask.getIdTask(), subtask);
-            EpicTask epicTask = getIdEpic(subtask.getEpicId());
-            double countStatus = 0;
+            fillEpicStatus(subtask.getEpicId());
+        }
+    }
 
+    private void fillEpicStatus(int epicId) {
+        EpicTask epicTask = getIdEpic(epicId);
+        double countStatus = 0;
+
+        if (epicTask.getSubtaskList().size() > 0) {
             for (Integer subId : epicTask.getSubtaskList()) {
                 Subtask subArray = storingSubtask.get(subId);
-                switch (subArray.getStatusTask()) {
-                    case "NEW":
-                        countStatus += 1;
-                        break;
-                    case "IN_PROGRESS":
-                        countStatus += 2;
-                        break;
-                    default:
-                        countStatus += 3;
+                if (subArray != null) {
+                    switch (subArray.getStatusTask()) {
+                        case "NEW":
+                            countStatus += 10;
+                            break;
+                        case "IN_PROGRESS":
+                            countStatus += 20;
+                            break;
+                        default:
+                            countStatus += 30;
+                    }
                 }
             }
-            if ((countStatus / epicTask.getSubtaskList().size()) <= 1) {
+            if ((countStatus / epicTask.getSubtaskList().size()) <= 10) {
                 epicTask.setStatusTask("NEW");
-            } else if ((countStatus / epicTask.getSubtaskList().size()) >= 3) {
+            } else if ((countStatus / epicTask.getSubtaskList().size()) >= 30) {
                 epicTask.setStatusTask("DONE");
             } else {
                 epicTask.setStatusTask("IN_PROGRESS");
             }
+        } else {
+            epicTask.setStatusTask("NEW");
         }
     }
 }

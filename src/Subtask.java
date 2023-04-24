@@ -1,5 +1,5 @@
-public class Subtask extends Task{
-    int epicId; // По условию нам известно к какому EpicTask принадлежит Subtask, то я решил связать их через epicId
+public class Subtask extends Task {
+    private int epicId; // По условию нам известно к какому EpicTask принадлежит Subtask, то я решил связать их через epicId
                 // переменную, которая указывается при создании объекта Subtask и является idTask объекта EpicTask
     public Subtask(String nameTask, String descriptionTask, int idTask, String statusTask, int epicId) {
         super(nameTask, descriptionTask, idTask, statusTask);
