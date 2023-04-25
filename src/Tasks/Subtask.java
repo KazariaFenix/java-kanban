@@ -1,6 +1,8 @@
+package Tasks;
+
 public class Subtask extends Task {
-    private int epicId; // По условию нам известно к какому EpicTask принадлежит Subtask, то я решил связать их через epicId
-                // переменную, которая указывается при создании объекта Subtask и является idTask объекта EpicTask
+    private int epicId; // По условию нам известно к какому Tasks.EpicTask принадлежит Tasks.Subtask, то я решил связать их через epicId
+                // переменную, которая указывается при создании объекта Tasks.Subtask и является idTask объекта Tasks.EpicTask
     public Subtask(String nameTask, String descriptionTask, int idTask, String statusTask, int epicId) {
         super(nameTask, descriptionTask, idTask, statusTask);
         this.epicId = epicId;

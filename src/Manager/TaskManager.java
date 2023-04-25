@@ -1,3 +1,9 @@
+package Manager;
+
+import Tasks.EpicTask;
+import Tasks.SimpleTask;
+import Tasks.Subtask;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -44,7 +50,7 @@ public class TaskManager {
     }
 
     public void clearSimpleTask() {
-        if (!storingSimple.isEmpty()) { //насчет лишних скобочек, разве их не добавляют для удобства читаемости кода?
+        if (!storingSimple.isEmpty()) {
             storingSimple.clear();
         }
     }
@@ -60,7 +66,8 @@ public class TaskManager {
         if (!storingSubtask.isEmpty()) {
             storingSubtask.clear();
             for (EpicTask epicTask : storingEpic.values()) {
-                epicTask.setStatusTask("NEW");
+                epicTask.clearSubtaskList();
+                fillEpicStatus(epicTask.getIdTask());
             }
         }
     }
@@ -105,7 +112,6 @@ public class TaskManager {
 
     public ArrayList<Subtask> getArrayListSubOfEpicTask(int epicId) {
         ArrayList<Subtask> arrayListSubOfEpic = new ArrayList<>();
-        ;
         if (storingEpic.containsKey(epicId)) {
             EpicTask epicTask = storingEpic.get(epicId);
             for (Integer subId : epicTask.getSubtaskList()) {

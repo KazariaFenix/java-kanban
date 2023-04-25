@@ -1,3 +1,8 @@
+import Manager.TaskManager;
+import Tasks.EpicTask;
+import Tasks.SimpleTask;
+import Tasks.Subtask;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -11,7 +16,7 @@ public class Main {
         Subtask subtask3 = new Subtask("Повышать квалификацию", "Больше читать и работать",
                 0,"IN_PROGRESS",1);
         Subtask subtask4 = new Subtask("Занятие с гирей", "Тренировка на верхние группы мышц",
-                0,"IN_PROGRESS",2);
+                0,"DONE",2);
         taskManager.addEpicTask(epicTask);
         taskManager.addEpicTask(epicTask1);
         taskManager.addSubtask(subtask1);
@@ -20,8 +25,8 @@ public class Main {
         //taskManager.addSimpleTask(simpleTask);
         //System.out.println(taskManager.getArrayListSubtask());
         //taskManager.deleteIdSubtask(5);
-        taskManager.deleteIdSubtask(3);
-        //System.out.println(taskManager.getIdEpic(2));
-        System.out.println(taskManager.getArrayListSubOfEpicTask(2));
+        taskManager.clearSubtask();
+        System.out.println(taskManager.getIdEpic(1));
+        //System.out.println(taskManager.getIdSub(2));
     }
 }
