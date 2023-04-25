@@ -2,15 +2,10 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/Main.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Manager/TaskManager.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Manager/TaskManager.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Tasks/EpicTask.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Tasks/EpicTask.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Tasks/SimpleTask.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Tasks/SimpleTask.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Tasks/Subtask.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Tasks/Subtask.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Tasks/Task.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/Tasks/Task.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/manager/TaskManager.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/tasks/EpicTask.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/tasks/SimpleTask.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/tasks/Subtask.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/tasks/Task.java" charset="UTF-8" />
   </component>
 </project>

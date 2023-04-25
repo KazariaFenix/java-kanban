@@ -1,4 +1,4 @@
-package Tasks;
+package tasks;
 
 public class Subtask extends Task {
     private int epicId; // По условию нам известно к какому Tasks.EpicTask принадлежит Tasks.Subtask, то я решил связать их через epicId

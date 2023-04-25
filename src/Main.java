@@ -1,7 +1,7 @@
-import Manager.TaskManager;
-import Tasks.EpicTask;
-import Tasks.SimpleTask;
-import Tasks.Subtask;
+import manager.TaskManager;
+import tasks.EpicTask;
+import tasks.SimpleTask;
+import tasks.Subtask;
 
 public class Main {
 

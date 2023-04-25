@@ -1,8 +1,8 @@
-package Manager;
+package manager;
 
-import Tasks.EpicTask;
-import Tasks.SimpleTask;
-import Tasks.Subtask;
+import tasks.EpicTask;
+import tasks.SimpleTask;
+import tasks.Subtask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
