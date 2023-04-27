@@ -12,14 +12,12 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, SimpleTask> storingSimple = new HashMap<>();
     private HashMap<Integer, EpicTask> storingEpic = new HashMap<>();
     private HashMap<Integer, Subtask> storingSubtask = new HashMap<>();
-    private HistoryManager historyManager = Managers.getDefaultHistory();
-    private ArrayList<Task> history = historyManager.getHistory();
+    private HistoryManager historyManager = Managers.getDefaultHistory();``
     private int id = 1;
 
-    private int idHistory = 0;
 
     public ArrayList<Task> getHistory() {
-        return history;
+        return historyManager.getHistory();
     }
 
     @Override
@@ -92,43 +90,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SimpleTask getIdSimple(int idSimple) {
-        if (history.size() < 10) {
-            history.add(storingSimple.get(idSimple));
-        } else {
-            history.set(idHistory, storingSimple.get(idSimple));
-            idHistory++;
-            if (idHistory > 9) {
-                idHistory = 0;
-            }
-        }
+        historyManager.add(storingSimple.get(idSimple));
         return storingSimple.get(idSimple);
     }
 
     @Override
     public EpicTask getIdEpic(int idEpic) {
-        if (history.size() < 10) {
-            history.add(storingEpic.get(idEpic));
-        } else {
-            history.set(idHistory, storingEpic.get(idEpic));
-            idHistory++;
-            if (idHistory > 9) {
-                idHistory = 0;
-            }
-        }
+        historyManager.add(storingEpic.get(idEpic));
         return storingEpic.get(idEpic);
     }
 
     @Override
     public Subtask getIdSub(int idSub) {
-        if (history.size() < 10) {
-            history.add(storingSubtask.get(idSub));
-        } else {
-            history.set(idHistory, storingSubtask.get(idSub));
-            idHistory++;
-            if (idHistory > 9) {
-                idHistory = 0;
-            }
-        }
+        historyManager.add(storingSubtask.get(idSub));
         return storingSubtask.get(idSub);
     }
 
