@@ -1,12 +1,14 @@
 package tasks;
 
+import manager.StatusTask;
+
 public class Task {
     private String nameTask;
     private String descriptionTask;
     private int idTask;
-    private String statusTask;
+    private StatusTask statusTask;
 
-    public Task(String nameTask, String descriptionTask, int idTask, String statusTask) {
+    public Task(String nameTask, String descriptionTask, int idTask, StatusTask statusTask) {
         this.nameTask = nameTask;
         this.descriptionTask = descriptionTask;
         this.idTask = idTask;
@@ -37,17 +39,17 @@ public class Task {
         this.idTask = idTask;
     }
 
-    public String getStatusTask() {
+    public StatusTask getStatusTask() {
         return statusTask;
     }
 
-    public void setStatusTask(String statusTask) {
+    public void setStatusTask(StatusTask statusTask) {
         this.statusTask = statusTask;
     }
 
     @Override
     public String toString() {
         return "\nНазвание задачи: " + nameTask + "\nОписание задачи: " + descriptionTask + "\nId задачи: " + idTask +
-                "\nСтатус задачи: " + statusTask + "\n";
+                "\nСтатус задачи: " + statusTask.name() + "\n";
     }
 }

@@ -5,172 +5,44 @@ import tasks.SimpleTask;
 import tasks.Subtask;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class TaskManager {
-    private HashMap<Integer, SimpleTask> storingSimple = new HashMap<>();
-    private HashMap<Integer, EpicTask> storingEpic = new HashMap<>();
-    private HashMap<Integer, Subtask> storingSubtask = new HashMap<>();
-    private int id = 1;
+public interface TaskManager {
 
-    public void addSimpleTask(SimpleTask simpleTask) {
-        simpleTask.setIdTask(id);
-        id++;
-        storingSimple.put(simpleTask.getIdTask(), simpleTask);
-    }
+    void addSimpleTask(SimpleTask simpleTask);
 
-    public void addEpicTask(EpicTask epicTask) {
-        epicTask.setIdTask(id);
-        epicTask.setStatusTask("NEW");
-        id++;
-        storingEpic.put(epicTask.getIdTask(), epicTask);
-    }
+    void addEpicTask(EpicTask epicTask);
 
-    public void addSubtask(Subtask subtask) {
-        if (storingEpic.containsKey(subtask.getEpicId())) {
-            subtask.setIdTask(id);
-            id++;
-            storingSubtask.put(subtask.getIdTask(), subtask);
-            EpicTask epicTask = storingEpic.get(subtask.getEpicId());
-            epicTask.addSubtuskList(subtask.getIdTask());
-            fillEpicStatus(subtask.getEpicId());
-        }
-    }
+    void addSubtask(Subtask subtask);
 
-    public ArrayList<SimpleTask> getArrayListSimpleTask() {
-        return new ArrayList<>(storingSimple.values());
-    }
+    ArrayList<SimpleTask> getArrayListSimpleTask();
 
-    public ArrayList<EpicTask> getArrayListEpicTask() {
-        return new ArrayList<>(storingEpic.values());
-    }
+    ArrayList<EpicTask> getArrayListEpicTask();
 
-    public ArrayList<Subtask> getArrayListSubtask() {
-        return new ArrayList<>(storingSubtask.values());
-    }
+    ArrayList<Subtask> getArrayListSubtask();
 
-    public void clearSimpleTask() {
-        if (!storingSimple.isEmpty()) {
-            storingSimple.clear();
-        }
-    }
+    void clearSimpleTask();
 
-    public void clearEpicTask() {
-        if (!storingEpic.isEmpty()) {
-            storingEpic.clear();
-            storingSubtask.clear();
-        }
-    }
+    void clearEpicTask();
 
-    public void clearSubtask() {
-        if (!storingSubtask.isEmpty()) {
-            storingSubtask.clear();
-            for (EpicTask epicTask : storingEpic.values()) {
-                epicTask.clearSubtaskList();
-                fillEpicStatus(epicTask.getIdTask());
-            }
-        }
-    }
+    void clearSubtask();
 
-    public SimpleTask getIdSimple(int idSimple) {
-        return storingSimple.get(idSimple);
-    }
+    SimpleTask getIdSimple(int idSimple);
 
-    public EpicTask getIdEpic(int idEpic) {
-        return storingEpic.get(idEpic);
-    }
+    EpicTask getIdEpic(int idEpic);
 
-    public Subtask getIdSub(int idSub) {
-        return storingSubtask.get(idSub);
-    }
+    Subtask getIdSub(int idSub);
 
-    public void deleteIdSimple(int simpleId) {
-        if (storingSimple.containsKey(simpleId)) {
-            storingSimple.remove(simpleId);
-        }
-    }
+    void deleteIdSimple(int simpleId);
 
-    public void deleteIdEpicTask(int epicId) {
-        if (storingEpic.containsKey(epicId)) {
-            EpicTask epicTask = storingEpic.get(epicId);
-            for (Integer subId : epicTask.getSubtaskList()) {
-                storingSubtask.remove(subId);
-            }
-            storingEpic.remove(epicId);
-        }
-    }
+    void deleteIdEpicTask(int epicId);
 
-    public void deleteIdSubtask(int subId) {
-        if (storingSubtask.containsKey(subId)) {
-            Subtask subtask = storingSubtask.get(subId);
-            EpicTask epicTask = getIdEpic(subtask.getEpicId());
-            epicTask.removeSubtaskList(subtask.getIdTask());
-            storingSubtask.remove(subId);
-            fillEpicStatus(subtask.getEpicId());
-        }
-    }
+    void deleteIdSubtask(int subId);
 
-    public ArrayList<Subtask> getArrayListSubOfEpicTask(int epicId) {
-        ArrayList<Subtask> arrayListSubOfEpic = new ArrayList<>();
-        if (storingEpic.containsKey(epicId)) {
-            EpicTask epicTask = storingEpic.get(epicId);
-            for (Integer subId : epicTask.getSubtaskList()) {
-                arrayListSubOfEpic.add(storingSubtask.get(subId));
-            }
-        }
-        return arrayListSubOfEpic;
-    }
+    ArrayList<Subtask> getArrayListSubOfEpicTask(int epicId);
 
-    public void updateSimpleTask(SimpleTask simpleTask) {
-        if (storingSimple.containsKey(simpleTask)) {
-            storingSimple.put(simpleTask.getIdTask(), simpleTask);
-        }
-    }
+    void updateSimpleTask(SimpleTask simpleTask);
 
-    public void updateEpicTask(EpicTask epicTask) {
-        if (storingEpic.containsKey(epicTask.getIdTask())) {
-            EpicTask oldEpicTask = storingEpic.get(epicTask.getIdTask());
-            oldEpicTask.setDescriptionTask(epicTask.getDescriptionTask());
-            oldEpicTask.setNameTask(epicTask.getNameTask());
-        }
-    }
+    void updateEpicTask(EpicTask epicTask);
 
-    public void updateSubtask(Subtask subtask) {
-        if (storingSubtask.containsKey(subtask.getIdTask())) {
-            storingSubtask.put(subtask.getIdTask(), subtask);
-            fillEpicStatus(subtask.getEpicId());
-        }
-    }
-
-    private void fillEpicStatus(int epicId) {
-        EpicTask epicTask = getIdEpic(epicId);
-        double countStatus = 0;
-
-        if (epicTask.getSubtaskList().size() > 0) {
-            for (Integer subId : epicTask.getSubtaskList()) {
-                Subtask subArray = storingSubtask.get(subId);
-                if (subArray != null) {
-                    switch (subArray.getStatusTask()) {
-                        case "NEW":
-                            countStatus += 10;
-                            break;
-                        case "IN_PROGRESS":
-                            countStatus += 20;
-                            break;
-                        default:
-                            countStatus += 30;
-                    }
-                }
-            }
-            if ((countStatus / epicTask.getSubtaskList().size()) <= 10) {
-                epicTask.setStatusTask("NEW");
-            } else if ((countStatus / epicTask.getSubtaskList().size()) >= 30) {
-                epicTask.setStatusTask("DONE");
-            } else {
-                epicTask.setStatusTask("IN_PROGRESS");
-            }
-        } else {
-            epicTask.setStatusTask("NEW");
-        }
-    }
+    void updateSubtask(Subtask subtask);
 }
