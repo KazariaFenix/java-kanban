@@ -1,10 +1,10 @@
 package manager;
 
-import tasks.EpicTask;
-import tasks.SimpleTask;
-import tasks.Subtask;
+import model.EpicTask;
+import model.SimpleTask;
+import model.Subtask;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -14,11 +14,11 @@ public interface TaskManager {
 
     void addSubtask(Subtask subtask);
 
-    ArrayList<SimpleTask> getArrayListSimpleTask();
+    List<SimpleTask> getSimpleTask();
 
-    ArrayList<EpicTask> getArrayListEpicTask();
+    List<EpicTask> getEpicTask();
 
-    ArrayList<Subtask> getArrayListSubtask();
+    List<Subtask> getSubtask();
 
     void clearSimpleTask();
 
@@ -38,7 +38,7 @@ public interface TaskManager {
 
     void deleteIdSubtask(int subId);
 
-    ArrayList<Subtask> getArrayListSubOfEpicTask(int epicId);
+    List<Subtask> getSubOfEpicTask(int epicId);
 
     void updateSimpleTask(SimpleTask simpleTask);
 

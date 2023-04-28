@@ -1,6 +1,4 @@
-package tasks;
-
-import manager.StatusTask;
+package model;
 
 public class Subtask extends Task {
     private int epicId;

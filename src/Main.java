@@ -1,9 +1,6 @@
 import manager.InMemoryTaskManager;
-import manager.Managers;
-import manager.StatusTask;
-import tasks.EpicTask;
-import tasks.SimpleTask;
-import tasks.Subtask;
+import model.StatusTask;
+import model.SimpleTask;
 
 public class Main {
 
@@ -48,6 +45,6 @@ public class Main {
         in.getIdSimple(11);
         in.getIdSimple(12);
         in.getIdSimple(13);
-        System.out.println(Managers.getDefaultHistory().getHistory());
+        System.out.println(in.getHistoryManager().getHistory());
     }
 }
