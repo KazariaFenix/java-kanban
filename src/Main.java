@@ -45,6 +45,6 @@ public class Main {
         in.getIdSimple(11);
         in.getIdSimple(12);
         in.getIdSimple(13);
-        System.out.println(in.getHistoryManager().getHistory());
+        System.out.println(in.getHistoryManager());
     }
 }
