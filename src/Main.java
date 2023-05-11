@@ -1,50 +1,38 @@
 import manager.InMemoryTaskManager;
+import model.EpicTask;
 import model.StatusTask;
-import model.SimpleTask;
+import model.Subtask;
 
 public class Main {
 
     public static void main(String[] args) {
-        SimpleTask simpleTask1 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask2 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask3 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask4 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask5 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask6 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask7 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask8 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask9 = new SimpleTask("Learn", "Learning", 0, StatusTask.NEW);
-        SimpleTask simpleTask10 = new SimpleTask("Learn", "Learning",06, StatusTask.NEW);
-        SimpleTask simpleTask11 = new SimpleTask(")#(#($(#$)", "Learn", 0, StatusTask.NEW);
-        SimpleTask simpleTask12 = new SimpleTask("Learn", "Learn", 0, StatusTask.NEW);
-        SimpleTask simpleTask13 = new SimpleTask("!!!!!!!!", "Learn", 0, StatusTask.NEW);
         InMemoryTaskManager in = new InMemoryTaskManager();
-        in.addSimpleTask(simpleTask1);
-        in.addSimpleTask(simpleTask2);
-        in.addSimpleTask(simpleTask3);
-        in.addSimpleTask(simpleTask4);
-        in.addSimpleTask(simpleTask5);
-        in.addSimpleTask(simpleTask6);
-        in.addSimpleTask(simpleTask7);
-        in.addSimpleTask(simpleTask8);
-        in.addSimpleTask(simpleTask9);
-        in.addSimpleTask(simpleTask10);
-        in.addSimpleTask(simpleTask11);
-        in.addSimpleTask(simpleTask12);
-        in.addSimpleTask(simpleTask13);
-        in.getIdSimple(1);
-        in.getIdSimple(2);
-        in.getIdSimple(3);
-        in.getIdSimple(4);
-        in.getIdSimple(5);
-        in.getIdSimple(6);
-        in.getIdSimple(7);
-        in.getIdSimple(8);
-        in.getIdSimple(9);
-        in.getIdSimple(10);
-        in.getIdSimple(11);
-        in.getIdSimple(12);
-        in.getIdSimple(13);
+
+        EpicTask epicTask1 = new EpicTask("1", "Learning", 0, StatusTask.NEW);
+        EpicTask epicTask2 = new EpicTask("2", "Sport", 0, StatusTask.NEW);
+        Subtask subTask3 = new Subtask("2/1", "Jump", 0, StatusTask.NEW, 2);
+        Subtask subTask4 = new Subtask("2/2", "Run", 0, StatusTask.NEW, 2);
+        Subtask subTask5 = new Subtask("2/3", "Play", 0, StatusTask.NEW,2);
+
+        in.createEpicTask(epicTask1);
+        in.createEpicTask(epicTask2);
+        in.createSubtask(subTask3);
+        in.createSubtask(subTask4);
+        in.createSubtask(subTask5);
+        in.getIdEpic(1);
+        in.getIdEpic(2);
+        in.getIdSub(3);
+        in.getIdSub(4);
+        in.getIdSub(5);
+        in.getIdSub(3);
+        in.getIdSub(4);
+        in.getIdEpic(2);
+        in.getIdEpic(1);
+        in.getIdSub(5);
+        in.getIdSub(5);
+        in.getIdEpic(1);
+        in.deleteIdSubtask(3);
+        //in.deleteIdEpicTask(2);
         System.out.println(in.getHistoryManager());
     }
 }

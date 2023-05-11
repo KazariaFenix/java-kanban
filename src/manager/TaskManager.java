@@ -11,11 +11,11 @@ public interface TaskManager {
 
     List<Task> getHistoryManager();
 
-    void addSimpleTask(SimpleTask simpleTask);
+    void createSimpleTask(SimpleTask simpleTask);
 
-    void addEpicTask(EpicTask epicTask);
+    void createEpicTask(EpicTask epicTask);
 
-    void addSubtask(Subtask subtask);
+    void createSubtask(Subtask subtask);
 
     List<SimpleTask> getSimpleTask();
 

@@ -19,14 +19,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void addSimpleTask(SimpleTask simpleTask) {
+    public void createSimpleTask(SimpleTask simpleTask) {
         simpleTask.setIdTask(id);
         id++;
         storingSimple.put(simpleTask.getIdTask(), simpleTask);
     }
 
     @Override
-    public void addEpicTask(EpicTask epicTask) {
+    public void createEpicTask(EpicTask epicTask) {
         epicTask.setIdTask(id);
         epicTask.setStatusTask(StatusTask.NEW);
         id++;
@@ -34,13 +34,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void addSubtask(Subtask subtask) {
+    public void createSubtask(Subtask subtask) {
         if (storingEpic.containsKey(subtask.getEpicId())) {
             subtask.setIdTask(id);
             id++;
             storingSubtask.put(subtask.getIdTask(), subtask);
             EpicTask epicTask = storingEpic.get(subtask.getEpicId());
-            epicTask.addSubtuskList(subtask.getIdTask());
+            epicTask.addSubList(subtask.getIdTask());
             fillEpicStatus(subtask.getEpicId());
         }
     }
@@ -96,7 +96,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public EpicTask getIdEpic(int idEpic) {
-        if (storingEpic.get(idEpic) != null) {
+        if (storingEpic.containsKey(idEpic)) {
             historyManager.add(storingEpic.get(idEpic));
         }
         return storingEpic.get(idEpic);
@@ -104,7 +104,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getIdSub(int idSub) {
-        if (storingSubtask.get(idSub) != null) {
+        if (storingSubtask.containsKey(idSub)) {
             historyManager.add(storingSubtask.get(idSub));
         }
         return storingSubtask.get(idSub);
@@ -115,6 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (storingSimple.containsKey(simpleId)) {
             storingSimple.remove(simpleId);
         }
+        historyManager.remove(simpleId);
     }
 
     @Override
@@ -123,9 +124,11 @@ public class InMemoryTaskManager implements TaskManager {
             EpicTask epicTask = storingEpic.get(epicId);
             for (Integer subId : epicTask.getSubtaskList()) {
                 storingSubtask.remove(subId);
+                historyManager.remove(subId);
             }
             storingEpic.remove(epicId);
         }
+        historyManager.remove(epicId);
     }
 
     @Override
@@ -137,6 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
             storingSubtask.remove(subId);
             fillEpicStatus(subtask.getEpicId());
         }
+        historyManager.remove(subId);
     }
 
     @Override
@@ -176,7 +180,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void fillEpicStatus(int epicId) {
-        EpicTask epicTask = getIdEpic(epicId);
+        EpicTask epicTask = storingEpic.get(epicId);
         double countStatus = 0;
 
         if (epicTask.getSubtaskList().size() > 0) {
