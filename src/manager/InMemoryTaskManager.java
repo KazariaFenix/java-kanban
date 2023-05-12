@@ -63,6 +63,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearSimpleTask() {
         if (!storingSimple.isEmpty()) {
+            for (Integer idSimple : storingSimple.keySet()) {
+                historyManager.remove(idSimple);
+            }
             storingSimple.clear();
         }
     }
@@ -70,6 +73,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearEpicTask() {
         if (!storingEpic.isEmpty()) {
+            for (Integer idEpic : storingEpic.keySet()) {
+                historyManager.remove(idEpic);
+            }
+            for (Integer idSub : storingSubtask.keySet()) {
+                historyManager.remove(idSub);
+            }
             storingEpic.clear();
             storingSubtask.clear();
         }
@@ -78,6 +87,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearSubtask() {
         if (!storingSubtask.isEmpty()) {
+            for (Integer idSub : storingSubtask.keySet()) {
+                historyManager.remove(idSub);
+            }
             storingSubtask.clear();
             for (EpicTask epicTask : storingEpic.values()) {
                 epicTask.clearSubtaskList();
@@ -135,7 +147,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteIdSubtask(int subId) {
         if (storingSubtask.containsKey(subId)) {
             Subtask subtask = storingSubtask.get(subId);
-            EpicTask epicTask = getIdEpic(subtask.getEpicId());
+            EpicTask epicTask = storingEpic.get(subtask.getEpicId());
             epicTask.removeSubtaskList(subtask.getIdTask());
             storingSubtask.remove(subId);
             fillEpicStatus(subtask.getEpicId());

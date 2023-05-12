@@ -31,8 +31,8 @@ public class Main {
         in.getIdSub(5);
         in.getIdSub(5);
         in.getIdEpic(1);
-        in.deleteIdSubtask(3);
-        //in.deleteIdEpicTask(2);
+        //in.deleteIdSubtask(3);
+        in.clearSubtask();
         System.out.println(in.getHistoryManager());
     }
 }

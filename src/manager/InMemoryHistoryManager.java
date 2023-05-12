@@ -1,6 +1,5 @@
 package manager;
 
-import model.Node;
 import model.Task;
 
 import java.util.*;
@@ -9,7 +8,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private final CustomLinkedList<Task> history = new CustomLinkedList<>();
     private final Map<Integer, Node> tasks = new HashMap<>();
-    private final ArrayList<Task> taskList = new ArrayList<>();
 
     @Override
     public List<Task> getHistory() {
@@ -53,6 +51,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         public List<Task> getTasks() {
+            final ArrayList<Task> taskList = new ArrayList<>();
             Node<Task> node = head;
             while(node != null) {
                 taskList.add(node.getTask());

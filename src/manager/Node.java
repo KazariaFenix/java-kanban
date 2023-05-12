@@ -1,4 +1,4 @@
-package model;
+package manager;
 
 public class Node<E> {
     private E task;
