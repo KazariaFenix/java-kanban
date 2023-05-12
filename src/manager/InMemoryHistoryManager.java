@@ -53,9 +53,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         public List<Task> getTasks() {
-            for (Integer taskId : tasks.keySet()) {
-                Node<Task> node = tasks.get(taskId);
+            Node<Task> node = head;
+            while(node != null) {
                 taskList.add(node.getTask());
+                node = node.getNext();
             }
             return taskList;
         }
