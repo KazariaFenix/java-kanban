@@ -29,7 +29,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTasksManager  loadFromFile(String address) { // Так как при сохранении, я не использовал
-        Path pathOfFile = Path.of(address);//класс Fail, то и при загрузки, мне достаточно строки, потому чуть изменил
+        Path pathOfFile = Path.of(address);//класс File, то и при загрузки, мне достаточно строки, потому чуть изменил
         try (Reader reader = Files.newBufferedReader(pathOfFile)){//параметры метода
             List<String> linesLoad = Files.readAllLines(pathOfFile);
             return new FileBackedTasksManager(linesLoad, pathOfFile);
