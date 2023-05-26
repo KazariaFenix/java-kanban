@@ -19,4 +19,9 @@ public class Subtask extends Task {
     public String toString() {
         return "\nПодзадача:" + super.toString();
     }
+
+    @Override
+    public String toStringFile() { // решил чуть изменить название метода, что бы выводилось по разному в консоль
+        return super.toStringFile() + "," + epicId; //понятно, а в файл по нужному лекалу
+    }
 }

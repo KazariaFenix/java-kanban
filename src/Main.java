@@ -1,9 +1,5 @@
-import manager.InMemoryTaskManager;
-import model.EpicTask;
-import model.StatusTask;
-import model.Subtask;
 
-public class Main {
+/*public class Main {
 
     public static void main(String[] args) {
         InMemoryTaskManager in = new InMemoryTaskManager();
@@ -36,3 +32,4 @@ public class Main {
         System.out.println(in.getHistoryManager());
     }
 }
+*/

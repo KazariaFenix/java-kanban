@@ -50,4 +50,9 @@ public class Task {
         return "\nНазвание задачи: " + nameTask + "\nОписание задачи: " + descriptionTask + "\nId задачи: " + idTask +
                 "\nСтатус задачи: " + statusTask.name() + "\n";
     }
+
+    public String toStringFile() {
+        return idTask + "," + TypesTasks.valueOf(this.getClass().getSimpleName().toUpperCase()).name()
+                + "," + nameTask + "," + statusTask + "," + descriptionTask;
+    }
 }
