@@ -3,7 +3,6 @@ package manager;
 import model.*;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,33 +11,34 @@ import java.util.List;
 import static java.nio.file.StandardOpenOption.APPEND;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private List<String> lines;
     private Path path;
-    FileBackedTasksManager (List<String> lines, Path path) {
-        this.lines = lines;
+
+    FileBackedTasksManager(Path path) {
         this.path = path;
     }
 
     public static void main(String[] args) {
         FileBackedTasksManager file = loadFromFile("resources" +
                 "\\SaveData.csv");
-        file.load();
+
         System.out.println(file.storingEpic);
         System.out.println(file.historyManager.getHistory());
 
     }
 
-    public static FileBackedTasksManager  loadFromFile(String address) { // Так как при сохранении, я не использовал
-        Path pathOfFile = Path.of(address);//класс File, то и при загрузки, мне достаточно строки, потому чуть изменил
-        try (Reader reader = Files.newBufferedReader(pathOfFile)){//параметры метода
-            List<String> linesLoad = Files.readAllLines(pathOfFile);
-            return new FileBackedTasksManager(linesLoad, pathOfFile);
+    public static FileBackedTasksManager loadFromFile(String address) {
+        Path pathOfFile = Path.of(address);
+        FileBackedTasksManager file = new FileBackedTasksManager(pathOfFile);
+        try {
+            List<String> lines = Files.readAllLines(pathOfFile);
+            file.load(lines);//дополнительно теперь ничего вызывать не надо, просто декомпозировал задачу на 2 метода
+            return file;
         } catch (IOException e) {
             throw new ManagerSaveException();
         }
     }
 
-    public void load() {
+    public void load(List<String> lines) {
         List<Integer> saveHistory = historyFromString(lines.get(lines.size() - 1));
         for (int k = 0; k < saveHistory.size(); k++) {
             for (int i = 1; i < lines.size() - 2; i++) {
@@ -51,52 +51,24 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8); ) {
+        try {
             Files.deleteIfExists(path);
             Files.createFile(path);
-            Files.writeString(path,"id,type,name,status,description,epic\n", APPEND);
+            Files.writeString(path, "id,type,name,status,description,epic\n", APPEND);
             for (SimpleTask simpleTask : storingSimple.values()) {
-                Files.writeString(path,simpleTask.toStringFile() + "\n", APPEND);
+                Files.writeString(path, simpleTask.toStringFile() + "\n", APPEND);
             }
             for (EpicTask epicTask : storingEpic.values()) {
-                Files.writeString(path,epicTask.toStringFile() + "\n", APPEND);
+                Files.writeString(path, epicTask.toStringFile() + "\n", APPEND);
             }
             for (Subtask subtask : storingSubtask.values()) {
                 Files.writeString(path, subtask.toStringFile() + "\n", APPEND);
             }
             Files.writeString(path, "\n" + historyToString(historyManager), APPEND);
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new ManagerSaveException();
         }
     }
-
-    public Task fromString(String value) {
-        String[] values = value.split(",");
-        switch (TypesTasks.valueOf(values[1])) {
-            case SIMPLETASK:
-                SimpleTask simpleTask = new SimpleTask(values[2], values[4], Integer.parseInt(values[0]),
-                        StatusTask.valueOf(values[3]));
-                storingSimple.put(simpleTask.getIdTask(),simpleTask);
-                return simpleTask;
-            case EPICTASK:
-                EpicTask epicTask = new EpicTask (values[2], values[4], Integer.parseInt(values[0]),
-                        StatusTask.valueOf(values[3]));
-                storingEpic.put(epicTask.getIdTask(), epicTask);
-                return epicTask;
-            default:
-                if (values.length > 5) {
-                    Subtask subtask = new Subtask(values[2], values[4], Integer.parseInt(values[0]),
-                            StatusTask.valueOf(values[3]), Integer.parseInt(values[5]));
-                    storingSubtask.put(subtask.getIdTask(), subtask);
-                    storingEpic.get(subtask.getEpicId()).addSubList(subtask.getIdTask());
-                    return subtask;
-                } else {
-                    return null;
-                }
-        }
-    }
-
-
 
     public static String historyToString(HistoryManager manager) {
         List<String> stringId = new ArrayList<>();
@@ -114,6 +86,32 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             saveHistory.add(Integer.parseInt(s));
         }
         return saveHistory;
+    }
+
+    public Task fromString(String value) {
+        String[] values = value.split(",");
+        switch (TypesTasks.valueOf(values[1])) {
+            case SIMPLETASK:
+                SimpleTask simpleTask = new SimpleTask(values[2], values[4], Integer.parseInt(values[0]),
+                        StatusTask.valueOf(values[3]));
+                storingSimple.put(simpleTask.getIdTask(), simpleTask);
+                return simpleTask;
+            case EPICTASK:
+                EpicTask epicTask = new EpicTask(values[2], values[4], Integer.parseInt(values[0]),
+                        StatusTask.valueOf(values[3]));
+                storingEpic.put(epicTask.getIdTask(), epicTask);
+                return epicTask;
+            default:
+                if (values.length > 5) {
+                    Subtask subtask = new Subtask(values[2], values[4], Integer.parseInt(values[0]),
+                            StatusTask.valueOf(values[3]), Integer.parseInt(values[5]));
+                    storingSubtask.put(subtask.getIdTask(), subtask);
+                    storingEpic.get(subtask.getEpicId()).addSubList(subtask.getIdTask());
+                    return subtask;
+                } else {
+                    return null;
+                }
+        }
     }
 
     @Override
@@ -206,10 +204,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         SimpleTask simpleTask = super.getIdSimple(idSimple);
         save();
         return simpleTask;
-    }
-
-    public List<String> getLines() {
-        return lines;
     }
 
     public Path getPath() {
