@@ -39,15 +39,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void load(List<String> lines) {
+        for (int i = 1; i < lines.size() - 2; i++) {
+            fromString(lines.get(i));
+        }
         List<Integer> saveHistory = historyFromString(lines.get(lines.size() - 1));
         for (int k = 0; k < saveHistory.size(); k++) {
-            for (int i = 1; i < lines.size() - 2; i++) {
-                Task task = fromString(lines.get(i));
-                if (task != null && saveHistory.get(k) == task.getIdTask()) {
-                    historyManager.add(task);
-                }
+            if (storingSimple.containsKey(saveHistory.get(k))) {
+                historyManager.add(storingSubtask.get(saveHistory.get(k)));
+            } else if (storingEpic.containsKey(saveHistory.get(k))) {
+                historyManager.add(storingEpic.get(saveHistory.get(k)));
+            } else if (storingSubtask.containsKey(saveHistory.get(k))) {
+                historyManager.add(storingSubtask.get(saveHistory.get(k)));
             }
         }
+
     }
 
     private void save() {
@@ -81,7 +86,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static List<Integer> historyFromString(String value) {
         String[] arrayId = value.split(",");
-        ArrayList<Integer> saveHistory = new ArrayList<>();
+        List<Integer> saveHistory = new ArrayList<>();
         for (String s : arrayId) {
             saveHistory.add(Integer.parseInt(s));
         }
