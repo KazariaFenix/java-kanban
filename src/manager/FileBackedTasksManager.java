@@ -38,9 +38,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void load(List<String> lines) {
+    private void load(List<String> lines) {
         for (int i = 1; i < lines.size() - 2; i++) {
-            fromString(lines.get(i));
+            Task task = fromString(lines.get(i));
+            if (id <= task.getIdTask()) {
+                id = task.getIdTask() + 1;
+            }
         }
         List<Integer> saveHistory = historyFromString(lines.get(lines.size() - 1));
         for (int k = 0; k < saveHistory.size(); k++) {
@@ -75,7 +78,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static String historyToString(HistoryManager manager) {
+    private static String historyToString(HistoryManager manager) {
         List<String> stringId = new ArrayList<>();
         for (Task task : manager.getHistory()) {
             stringId.add(Integer.toString(task.getIdTask()));
@@ -84,7 +87,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return listId;
     }
 
-    public static List<Integer> historyFromString(String value) {
+    private static List<Integer> historyFromString(String value) {
         String[] arrayId = value.split(",");
         List<Integer> saveHistory = new ArrayList<>();
         for (String s : arrayId) {
@@ -93,7 +96,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return saveHistory;
     }
 
-    public Task fromString(String value) {
+    private Task fromString(String value) {
         String[] values = value.split(",");
         switch (TypesTasks.valueOf(values[1])) {
             case SIMPLETASK:
