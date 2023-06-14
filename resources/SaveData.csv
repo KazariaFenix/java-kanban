@@ -1,8 +1,4 @@
-id,type,name,status,description,epic
-1,EPICTASK,10,NEW,Learning
-2,EPICTASK,20,NEW,Sport
-3,SUBTASK,2/10,NEW,Jump,2
-4,SUBTASK,2/20,NEW,Run,2
-5,SUBTASK,2/30,NEW,Play,2
+2023-06-15T00:28:53.005098200
+id,type,name,status,description,duration,localdatetime,epic
+1,EPICTASK,EpicTest0,NEW,EpicTestDesc0,0,2024-06-15T00:28:53.004594200
 
-2,3,4,5,1

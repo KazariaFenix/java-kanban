@@ -5,33 +5,37 @@ import model.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.file.StandardOpenOption.APPEND;
 
-public class FileBackedTasksManager extends InMemoryTaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
     private Path path;
 
-    FileBackedTasksManager(Path path) {
+    public FileBackedTaskManager(Path path) {
         this.path = path;
     }
 
     public static void main(String[] args) {
-        FileBackedTasksManager file = loadFromFile("resources" +
+        FileBackedTaskManager file = loadFromFile("resources" +
                 "\\SaveData.csv");
 
-        System.out.println(file.storingEpic);
-        System.out.println(file.historyManager.getHistory());
+        //System.out.println(file.storingEpic);
+        //System.out.println(file.historyManager.getHistory());
+        System.out.println(file.getPrioritizedTasks());
+        //System.out.println(file.timeMap);
 
     }
 
-    public static FileBackedTasksManager loadFromFile(String address) {
+    public static FileBackedTaskManager loadFromFile(String address) {
         Path pathOfFile = Path.of(address);
-        FileBackedTasksManager file = new FileBackedTasksManager(pathOfFile);
+        FileBackedTaskManager file = new FileBackedTaskManager(pathOfFile);
         try {
             List<String> lines = Files.readAllLines(pathOfFile);
-            file.load(lines);//дополнительно теперь ничего вызывать не надо, просто декомпозировал задачу на 2 метода
+            file.load(lines);
             return file;
         } catch (IOException e) {
             throw new ManagerSaveException();
@@ -39,30 +43,35 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void load(List<String> lines) {
-        for (int i = 1; i < lines.size() - 2; i++) {
-            Task task = fromString(lines.get(i));
-            if (id <= task.getIdTask()) {
-                id = task.getIdTask() + 1;
-            }
+        timeMap = createTimeMap(LocalDateTime.parse(lines.get(0)));
+        for (int i = 2; i < lines.size() - 1; i++) {
+                Task task = fromString(lines.get(i));
+                if (task != null && id <= task.getIdTask()) {
+                    id = task.getIdTask();
+                }
         }
         List<Integer> saveHistory = historyFromString(lines.get(lines.size() - 1));
         for (int k = 0; k < saveHistory.size(); k++) {
             if (storingSimple.containsKey(saveHistory.get(k))) {
-                historyManager.add(storingSubtask.get(saveHistory.get(k)));
+                historyManager.add(storingSimple.get(saveHistory.get(k)));
             } else if (storingEpic.containsKey(saveHistory.get(k))) {
                 historyManager.add(storingEpic.get(saveHistory.get(k)));
             } else if (storingSubtask.containsKey(saveHistory.get(k))) {
                 historyManager.add(storingSubtask.get(saveHistory.get(k)));
             }
         }
-
     }
 
     private void save() {
         try {
             Files.deleteIfExists(path);
             Files.createFile(path);
-            Files.writeString(path, "id,type,name,status,description,epic\n", APPEND);
+            if (getPrioritizedTasks().size() > 0) {
+                Files.writeString(path, getPrioritizedTasks().first().getLocalDateTime() + "\n", APPEND);
+            } else {
+                Files.writeString(path, LocalDateTime.now()+ "\n", APPEND);
+            }
+            Files.writeString(path, "id,type,name,status,description,duration,localdatetime,epic\n", APPEND);
             for (SimpleTask simpleTask : storingSimple.values()) {
                 Files.writeString(path, simpleTask.toStringFile() + "\n", APPEND);
             }
@@ -91,6 +100,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String[] arrayId = value.split(",");
         List<Integer> saveHistory = new ArrayList<>();
         for (String s : arrayId) {
+            if (s.isBlank()) {
+                return saveHistory;
+            }
             saveHistory.add(Integer.parseInt(s));
         }
         return saveHistory;
@@ -98,27 +110,34 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private Task fromString(String value) {
         String[] values = value.split(",");
-        switch (TypesTasks.valueOf(values[1])) {
-            case SIMPLETASK:
-                SimpleTask simpleTask = new SimpleTask(values[2], values[4], Integer.parseInt(values[0]),
-                        StatusTask.valueOf(values[3]));
-                storingSimple.put(simpleTask.getIdTask(), simpleTask);
-                return simpleTask;
-            case EPICTASK:
-                EpicTask epicTask = new EpicTask(values[2], values[4], Integer.parseInt(values[0]),
-                        StatusTask.valueOf(values[3]));
-                storingEpic.put(epicTask.getIdTask(), epicTask);
-                return epicTask;
-            default:
-                if (values.length > 5) {
-                    Subtask subtask = new Subtask(values[2], values[4], Integer.parseInt(values[0]),
-                            StatusTask.valueOf(values[3]), Integer.parseInt(values[5]));
-                    storingSubtask.put(subtask.getIdTask(), subtask);
-                    storingEpic.get(subtask.getEpicId()).addSubList(subtask.getIdTask());
-                    return subtask;
-                } else {
-                    return null;
-                }
+        if (values.length > 1) {
+            switch (TypesTasks.valueOf(values[1])) {
+                case SIMPLETASK:
+                    SimpleTask simpleTask = new SimpleTask(values[2], values[4], Integer.parseInt(values[0]),
+                            StatusTask.valueOf(values[3]), Duration.ofMinutes(Long.parseLong(values[5])),
+                            LocalDateTime.parse(values[6]));
+                    createSimpleTask(simpleTask);
+                    return simpleTask;
+                case EPICTASK:
+                    EpicTask epicTask = new EpicTask(values[2], values[4], Integer.parseInt(values[0]),
+                            StatusTask.valueOf(values[3]), Duration.ofMinutes(Long.parseLong(values[5])),
+                            LocalDateTime.parse(values[6]));
+                    createEpicTask(epicTask);
+                    return epicTask;
+                default:
+                    if (values.length > 7) {
+                        Subtask subtask = new Subtask(values[2], values[4], Integer.parseInt(values[0]),
+                                StatusTask.valueOf(values[3]), Duration.ofMinutes(Long.parseLong(values[5])),
+                                LocalDateTime.parse(values[6]), Integer.parseInt(values[7]));
+                        createSubtask(subtask);
+                        storingEpic.get(subtask.getEpicId()).addSubList(subtask.getIdTask());
+                        return subtask;
+                    } else {
+                        return null;
+                    }
+            }
+        } else {
+            return null;
         }
     }
 

@@ -60,9 +60,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             return taskList;
         }
 
-        public int getSize() {
-            return size;
-        }
 
         public void removeNode(Node<Task> node) {
             final Node<Task> prevNode = node.getPrev();
