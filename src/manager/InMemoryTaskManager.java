@@ -14,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected HistoryManager historyManager = Managers.getDefaultHistory();
     protected LinkedHashMap<LocalDateTime, Boolean> timeMap;
 
-    protected TreeSet<Task> listPriority = new TreeSet<>(Comparator.comparing(Task::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+    protected TreeSet<Task> listPriority = new TreeSet<>(Comparator.comparing(Task::getLocalDateTime));
     protected int id = 1;
 
     InMemoryTaskManager() {
