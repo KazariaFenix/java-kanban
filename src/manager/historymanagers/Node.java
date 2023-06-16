@@ -1,4 +1,4 @@
-package manager;
+package manager.historymanagers;
 
 public class Node<E> {
     private E task;

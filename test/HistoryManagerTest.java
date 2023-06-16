@@ -1,4 +1,4 @@
-import manager.HistoryManager;
+import manager.historymanagers.HistoryManager;
 import manager.Managers;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;

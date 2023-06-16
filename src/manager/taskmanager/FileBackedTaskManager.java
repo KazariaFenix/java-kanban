@@ -1,5 +1,7 @@
-package manager;
+package manager.taskmanager;
 
+import manager.historymanagers.HistoryManager;
+import manager.exception.ManagerSaveException;
 import model.*;
 
 import java.io.*;
@@ -43,8 +45,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void load(List<String> lines) {
-        timeMap = createTimeMap(LocalDateTime.parse(lines.get(0)));
-        for (int i = 2; i < lines.size() - 1; i++) {
+        for (int i = 1; i < lines.size() - 1; i++) {
                 Task task = fromString(lines.get(i));
                 if (task != null && id <= task.getIdTask()) {
                     id = task.getIdTask();
@@ -66,11 +67,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             Files.deleteIfExists(path);
             Files.createFile(path);
-            if (getPrioritizedTasks().size() > 0) {
-                Files.writeString(path, getPrioritizedTasks().first().getLocalDateTime() + "\n", APPEND);
-            } else {
-                Files.writeString(path, LocalDateTime.now()+ "\n", APPEND);
-            }
             Files.writeString(path, "id,type,name,status,description,duration,localdatetime,epic\n", APPEND);
             for (SimpleTask simpleTask : storingSimple.values()) {
                 Files.writeString(path, simpleTask.toStringFile() + "\n", APPEND);
@@ -110,18 +106,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Task fromString(String value) {
         String[] values = value.split(",");
-        if (values.length > 1) {
+        if (values.length >= 7) {
+            if (values[6].equals("null")) {
+                values[6] = LocalDateTime.MIN.toString();
+            }
             switch (TypesTasks.valueOf(values[1])) {
                 case SIMPLETASK:
                     SimpleTask simpleTask = new SimpleTask(values[2], values[4], Integer.parseInt(values[0]),
                             StatusTask.valueOf(values[3]), Duration.ofMinutes(Long.parseLong(values[5])),
                             LocalDateTime.parse(values[6]));
+                    if (simpleTask.getStartTime().isEqual(LocalDateTime.MIN)) {
+                        simpleTask.setStartTime(null);
+                    }
                     createSimpleTask(simpleTask);
                     return simpleTask;
                 case EPICTASK:
                     EpicTask epicTask = new EpicTask(values[2], values[4], Integer.parseInt(values[0]),
                             StatusTask.valueOf(values[3]), Duration.ofMinutes(Long.parseLong(values[5])),
                             LocalDateTime.parse(values[6]));
+                    if (epicTask.getStartTime().isEqual(LocalDateTime.MIN)) {
+                        epicTask.setStartTime(null);
+                    }
                     createEpicTask(epicTask);
                     return epicTask;
                 default:
@@ -129,6 +134,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         Subtask subtask = new Subtask(values[2], values[4], Integer.parseInt(values[0]),
                                 StatusTask.valueOf(values[3]), Duration.ofMinutes(Long.parseLong(values[5])),
                                 LocalDateTime.parse(values[6]), Integer.parseInt(values[7]));
+                        if (subtask.getStartTime().isEqual(LocalDateTime.MIN)) {
+                            subtask.setStartTime(null);
+                        }
                         createSubtask(subtask);
                         storingEpic.get(subtask.getEpicId()).addSubList(subtask.getIdTask());
                         return subtask;

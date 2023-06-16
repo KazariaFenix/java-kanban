@@ -1,14 +1,12 @@
-package manager;
+package manager.taskmanager;
 
 import model.EpicTask;
 import model.SimpleTask;
 import model.Subtask;
 import model.Task;
 
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
+
 import java.util.List;
-import java.util.TreeSet;
 
 public interface TaskManager {
 
@@ -52,15 +50,7 @@ public interface TaskManager {
 
     void updateSubtask(Subtask subtask);
 
-    LocalDateTime getEndTime(Task task);
-
-    LocalDateTime getEndTimeOfEpic(int idEpic);
-
-    void clearTimeMap(Task task);
-
     boolean checkingFreeTime(Task task);
 
-    LinkedHashMap<LocalDateTime, Boolean> createTimeMap(LocalDateTime start);
-
-    TreeSet<Task> getPrioritizedTasks();
+    List<Task> getPrioritizedTasks();
 }

@@ -10,9 +10,9 @@ public class EpicTask extends Task {
 
     public EpicTask(String nameTask, String descriptionTask, int idTask, StatusTask statusTask, Duration duration,
                     LocalDateTime localDateTime) {
-        super(nameTask, descriptionTask, idTask, statusTask, duration, localDateTime);
-    }
-
+        super(nameTask, descriptionTask, idTask, statusTask, duration, localDateTime);//про поле endTime в задании
+    }//говорилось,про удобство. На мой взгляд добавлять поле только в один класс наследник, хотя по сути оно есть
+    // у всех, крайне неудобно.
     public List<Integer> getSubtaskList() {
         return subtaskList;
     }

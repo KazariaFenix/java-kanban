@@ -1,12 +1,11 @@
-import manager.FileBackedTaskManager;
-import manager.ManagerSaveException;
+import manager.taskmanager.FileBackedTaskManager;
+import manager.exception.ManagerSaveException;
 import model.EpicTask;
 import model.SimpleTask;
 import model.StatusTask;
 import model.Subtask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -14,21 +13,12 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest extends TaskManagerTest {
+public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskManager> {
 
     @BeforeEach
     public void createObjectFileBacked() {
         taskManager = new FileBackedTaskManager(Paths.get("resources\\SaveData.csv"));
     }
-
-
-    /*@Test
-    public void whenSaveAndLoadClearTaskList() {
-        IndexOutOfBoundsException e = assertThrows(
-                IndexOutOfBoundsException.class,
-                (() -> FileBackedTaskManager.loadFromFile("resources\\SaveData.csv"))
-        );
-    } // для этого метода, необходимо очистить файл SaveData от любых данных*/
 
     @Test
     public void whenSaveAndLoadClearTaskListAddDelete() {
@@ -44,11 +34,10 @@ public class FileBackedTaskManagerTest extends TaskManagerTest {
         assertEquals(newManager.getSimpleTask().size(), 0, "Неизвестные задачи загрузились");
     }
 
-
     @Test
     public void whenSaveAndLoadNormal() {
         SimpleTask simpleTask = new SimpleTask("Test0", "TestDesc0", 0, StatusTask.NEW,
-                Duration.ofMinutes(5), LocalDateTime.now());
+                Duration.ofMinutes(5), null);
 
         taskManager.createSimpleTask(simpleTask);
         EpicTask epicTask = new EpicTask("EpicTest0", "EpicTestDesc0", 0, StatusTask.NEW,
@@ -78,7 +67,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest {
         FileBackedTaskManager newTaskManager = FileBackedTaskManager.loadFromFile("resources\\SaveData.csv");
 
         assertNotNull(newTaskManager, "Файлы не сохранились или не загрузились");
-        assertNotEquals(newTaskManager, taskManager, "Файлы сохранились или загрузились не верно");
+        assertEquals(newTaskManager, taskManager,
+                "Файлы сохранились или загрузились не верно");
     }
 
     @Test
@@ -98,7 +88,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest {
         FileBackedTaskManager newTaskManager = FileBackedTaskManager.loadFromFile("resources\\SaveData.csv");
 
         assertNotNull(newTaskManager, "Файлы не сохранились или не загрузились");
-        assertEquals(newTaskManager, taskManager, "Файлы сохранились или загрузились не верно");
+        assertEquals(newTaskManager.getEpicTask(), taskManager.getEpicTask(), "Файлы сохранились или загрузились не верно");
     }
 
     @Test

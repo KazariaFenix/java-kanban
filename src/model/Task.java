@@ -12,18 +12,18 @@ public class Task {
     private int idTask;
     private StatusTask statusTask;
     private Duration duration;
-    private LocalDateTime localDateTime;
+    private LocalDateTime startTime;
 
 
 
     public Task(String nameTask, String descriptionTask, int idTask, StatusTask statusTask, Duration duration,
-                LocalDateTime localDateTime) {
+                LocalDateTime startTime) { // была ошибка насчет форматирования, но это просто перенос строки
         this.nameTask = nameTask;
         this.descriptionTask = descriptionTask;
         this.idTask = idTask;
         this.statusTask = statusTask;
         this.duration = duration;
-        this.localDateTime = localDateTime;
+        this.startTime = startTime;
     }
 
     public String getNameTask() {
@@ -66,25 +66,42 @@ public class Task {
         this.duration = duration;
     }
 
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (getStartTime() == null) {
+            return null;
+        }
+        return getStartTime().plus(getDuration());
+    }
+
+    public String toStringFile() {
+        if (startTime == null) {
+            return idTask + "," + TypesTasks.valueOf(this.getClass().getSimpleName().toUpperCase()).name()
+                    + "," + nameTask + "," + statusTask + "," + descriptionTask + "," + duration.toMinutes() + ","
+                    + "null";
+        }
+        return idTask + "," + TypesTasks.valueOf(this.getClass().getSimpleName().toUpperCase()).name()
+                + "," + nameTask + "," + statusTask + "," + descriptionTask + "," + duration.toMinutes() + ","
+                + startTime.toString();
     }
 
     @Override
     public String toString() {
-        return "\nНазвание задачи: " + nameTask + "\nОписание задачи: " + descriptionTask + "\nId задачи: " + idTask +
-                "\nСтатус задачи: " + statusTask.name() + "\nВремя выполнения: " + duration.toMinutes()
-                + "\nДата создание: " + localDateTime.toString();
-    }
-
-    public String toStringFile() {
-        return idTask + "," + TypesTasks.valueOf(this.getClass().getSimpleName().toUpperCase()).name()
-                + "," + nameTask + "," + statusTask + "," + descriptionTask + "," + duration.toMinutes() + ","
-                + localDateTime.toString();
+        return "Task{" +
+                "nameTask='" + nameTask + '\'' +
+                ", descriptionTask='" + descriptionTask + '\'' +
+                ", idTask=" + idTask +
+                ", statusTask=" + statusTask +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
+                '}';
     }
 
     @Override
@@ -94,11 +111,11 @@ public class Task {
         Task task = (Task) o;
         return idTask == task.idTask && Objects.equals(nameTask, task.nameTask)
                 && Objects.equals(descriptionTask, task.descriptionTask) && statusTask == task.statusTask
-                && Objects.equals(duration, task.duration) && Objects.equals(localDateTime, task.localDateTime);
+                && Objects.equals(duration, task.duration) && Objects.equals(startTime, task.startTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nameTask, descriptionTask, idTask, statusTask, duration, localDateTime);
+        return Objects.hash(nameTask, descriptionTask, idTask, statusTask, duration, startTime);
     }
 }

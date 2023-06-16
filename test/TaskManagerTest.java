@@ -1,4 +1,4 @@
-import manager.TaskManager;
+import manager.taskmanager.TaskManager;
 import model.EpicTask;
 import model.SimpleTask;
 import model.StatusTask;
@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public abstract class TaskManagerTest <T extends TaskManager> {
+abstract class TaskManagerTest <T extends TaskManager> {
 
     protected T taskManager;
 
@@ -386,7 +386,7 @@ public abstract class TaskManagerTest <T extends TaskManager> {
 
         taskManager.createSubtask(oldSubtask);
         Subtask subtask = new Subtask("New1", "NewDesc1", oldSubtask.getIdTask(),
-                StatusTask.DONE, Duration.ofMinutes(7), LocalDateTime.now(), 8);
+                StatusTask.DONE, Duration.ofMinutes(7), LocalDateTime.now(), epicTask.getIdTask());
 
         taskManager.updateSubtask(subtask);
         assertEquals(subtask.getIdTask(), oldSubtask.getIdTask(), "Id модификаторы не совпадают");
@@ -434,5 +434,44 @@ public abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(getterList, subTaskList, "Списки полученные из разных методов не равны");
         assertEquals(epicTask.getStatusTask(), StatusTask.IN_PROGRESS, "Неверно рассчитан статус Эпика");
         assertEquals(epicTask.getIdTask(), subtask.getEpicId(), "Неверный epicID у Сабтаски");
+    }
+
+    @Test
+    public void whenFreeTimeTask() {
+        SimpleTask oldSimpleTask = new SimpleTask("Test0", "TestDesc0", 0, StatusTask.NEW,
+                Duration.ofMinutes(5), LocalDateTime.now());
+
+        taskManager.createSimpleTask(oldSimpleTask);
+        SimpleTask simpleTask = new SimpleTask("New1", "NewDesc0", 0,
+                StatusTask.IN_PROGRESS, Duration.ofMinutes(5), LocalDateTime.now());
+
+        taskManager.createSimpleTask(simpleTask);
+        assertEquals(taskManager.getSimpleTask().size(), 1, "Добавлена задача, нарушающая пересечение");
+    }
+
+    @Test
+    public void getPriority() {
+        SimpleTask simpleTask = new SimpleTask("Test0", "TestDesc0", 0, StatusTask.NEW,
+                Duration.ofMinutes(5), null);
+
+        taskManager.createSimpleTask(simpleTask);
+        EpicTask epicTask = new EpicTask("EpicTest0", "EpicTestDesc0", 0, StatusTask.NEW,
+                Duration.ofMinutes(5), LocalDateTime.now());
+
+        taskManager.createEpicTask(epicTask);
+        Subtask subtask = new Subtask("SubTest0", "SubDescTest0", 0, StatusTask.NEW,
+                Duration.ofMinutes(16), LocalDateTime.now().plusMinutes(15), epicTask.getIdTask());
+
+        taskManager.createSubtask(subtask);
+        Subtask subtask1 = new Subtask("SubTest0", "SubDescTest0", 0, StatusTask.NEW,
+                Duration.ofMinutes(16), null, epicTask.getIdTask());
+        taskManager.createSubtask(subtask1);
+        assertEquals(epicTask.getDuration().toMinutes(), 16);
+        assertEquals(taskManager.getPrioritizedTasks().get(0), subtask, "Неверная сортировка");
+        taskManager.deleteIdEpicTask(epicTask.getIdTask());
+        assertEquals(taskManager.getPrioritizedTasks().size(), 1, "Эпик не удалился из listPriority");
+        taskManager.deleteIdSimple(simpleTask.getIdTask());
+        assertEquals(taskManager.getSimpleTask().size(), taskManager.getPrioritizedTasks().size(),
+                "История не удалилась полностью");
     }
 }
