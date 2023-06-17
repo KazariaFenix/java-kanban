@@ -21,26 +21,9 @@ public class InMemoryTaskManagerTest extends TaskManagerTest <InMemoryTaskManage
     }
 
     @Test
-    public void whenExceptionFreeTime() {
-        EpicTask epicTask = new EpicTask("Test0", "TestDesc0", 0, StatusTask.NEW,
-                Duration.ofMinutes(5), LocalDateTime.now());
-
-        taskManager.createEpicTask(epicTask);
-        SimpleTask simpleTask = new SimpleTask("Test0", "TestDesc0", 0, StatusTask.IN_PROGRESS,
-                Duration.ofMinutes(5), LocalDateTime.now());
-
-        taskManager.createSimpleTask(simpleTask);
-        Subtask subtask = new Subtask("New1", "NewDesc1", 0,
-                StatusTask.DONE, Duration.ofMinutes(7), LocalDateTime.now(), epicTask.getIdTask());
-
-        taskManager.createSubtask(subtask);
-        assertEquals(epicTask.getSubtaskList().size(), 0, "Добавилась неподходящая история");
-    }
-
-    @Test
     public void whenEqualsClearManager() {
-        TaskManager newTasKManager = Managers.getDefault();
-        assertEquals(newTasKManager.hashCode(), taskManager.hashCode(), "Менеджеры не совпадают");
-        assertTrue(newTasKManager.equals(taskManager), "Менеджеры создаются разными");
+        TaskManager newTaskManager = Managers.getDefault();
+        assertEquals(newTaskManager.hashCode(), taskManager.hashCode(), "Менеджеры не совпадают");
+        assertTrue(newTaskManager.equals(taskManager), "Менеджеры создаются разными");
     }
 }

@@ -38,9 +38,14 @@ public class EpicTask extends Task {
     }
 
     @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    @Override
     public String toString() {
         return super.toString() +
-                "endTime=" + endTime +
+                " endTime=" + endTime +
                 '}';
     }
 }

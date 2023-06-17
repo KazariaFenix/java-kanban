@@ -1,3 +1,4 @@
+import manager.exception.FreeTimeException;
 import manager.taskmanager.TaskManager;
 import model.EpicTask;
 import model.SimpleTask;
@@ -451,8 +452,10 @@ abstract class TaskManagerTest <T extends TaskManager> {
         SimpleTask simpleTask = new SimpleTask("New1", "NewDesc0", 0,
                 StatusTask.IN_PROGRESS, Duration.ofMinutes(5), LocalDateTime.now());
 
-        taskManager.createSimpleTask(simpleTask);
-        assertEquals(taskManager.getSimpleTask().size(), 1, "Добавлена задача, нарушающая пересечение");
+        FreeTimeException exc = assertThrows(
+                FreeTimeException.class,
+                () -> taskManager.createSimpleTask(simpleTask)
+        );
     }
 
     @Test
@@ -472,7 +475,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         Subtask subtask1 = new Subtask("SubTest0", "SubDescTest0", 0, StatusTask.NEW,
                 Duration.ofMinutes(16), null, epicTask.getIdTask());
         taskManager.createSubtask(subtask1);
-        assertEquals(epicTask.getDuration().toMinutes(), 16);
+        assertEquals(epicTask.getDuration().toMinutes(), 32);
         assertEquals(taskManager.getPrioritizedTasks().get(0), subtask, "Неверная сортировка");
         taskManager.deleteIdEpicTask(epicTask.getIdTask());
         assertEquals(taskManager.getPrioritizedTasks().size(), 1, "Эпик не удалился из listPriority");

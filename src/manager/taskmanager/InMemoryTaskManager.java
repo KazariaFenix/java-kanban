@@ -26,7 +26,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSimpleTask(SimpleTask simpleTask) {
+    public void createSimpleTask(SimpleTask simpleTask) throws FreeTimeException {
         simpleTask.setIdTask(id);
         id++;
         if (checkingFreeTime(simpleTask)) {
@@ -34,11 +34,7 @@ public class InMemoryTaskManager implements TaskManager {
             storingSimple.put(simpleTask.getIdTask(), simpleTask);
         } else {
             id--;
-            try {
-                throw new FreeTimeException("Задача пересекается по времени с другими и не может быть добавлена");
-            } catch (FreeTimeException e) {
-                System.out.println(e.getMessage() + ". Название задачи: " + simpleTask.getNameTask());
-            }
+            throw new FreeTimeException("Задача пересекается по времени с другими и не может быть добавлена");
         }
     }
 
@@ -52,7 +48,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask) {
+    public void createSubtask(Subtask subtask) throws FreeTimeException {
         if (storingEpic.containsKey(subtask.getEpicId())) {
             subtask.setIdTask(id);
             id++;
@@ -65,11 +61,8 @@ public class InMemoryTaskManager implements TaskManager {
                 listPriority.add(subtask);
             } else {
                 id--;
-                try {
-                    throw new FreeTimeException("Задача пересекается по времени с другими и не может быть добавлена");
-                } catch (FreeTimeException e) {
-                    System.out.println(e.getMessage() + ". Название задачи: " + subtask.getNameTask());
-                }
+                throw new FreeTimeException("Задача пересекается по времени с другими и не может быть добавлена");
+
             }
         }
     }
@@ -206,7 +199,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSimpleTask(SimpleTask simpleTask) {
+    public void updateSimpleTask(SimpleTask simpleTask) throws FreeTimeException {
         if (storingSimple.containsKey(simpleTask.getIdTask())) {
             if (checkingFreeTime(simpleTask)) {
                 SimpleTask oldSimple = storingSimple.get(simpleTask.getIdTask());
@@ -214,12 +207,7 @@ public class InMemoryTaskManager implements TaskManager {
                 storingSimple.put(simpleTask.getIdTask(), simpleTask);
                 listPriority.add(simpleTask);
             } else {
-                try {
-                    throw new FreeTimeException("Задача пересекается по времени с другими и " +
-                            "не может быть модифицирована");
-                } catch (FreeTimeException e) {
-                    System.out.println(e.getMessage() + ". Название задачи: " + simpleTask.getNameTask());
-                }
+                throw new FreeTimeException("Задача пересекается по времени с другими и не может быть модифицирована");
             }
         }
     }
@@ -237,7 +225,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
+    public void updateSubtask(Subtask subtask) throws FreeTimeException {
         if (storingSubtask.containsKey(subtask.getIdTask())) {
             if (checkingFreeTime(subtask)) {
                 Subtask oldSubtask = storingSubtask.get(subtask.getIdTask());
@@ -245,15 +233,10 @@ public class InMemoryTaskManager implements TaskManager {
                 listPriority.remove(oldSubtask);
                 storingSubtask.put(oldSubtask.getIdTask(), subtask);
                 fillEpicStatus(subtask.getEpicId());
-                fillEpicStatus(subtask.getEpicId());
+                fillEndTimeOfEpic(subtask.getEpicId());
                 listPriority.add(subtask);
             } else {
-                try {
-                    throw new FreeTimeException("Задача пересекается по времени с другими и " +
-                            "не может быть модифицирована");
-                } catch (FreeTimeException e) {
-                    System.out.println(e.getMessage() + ". Название задачи: " + subtask.getNameTask());
-                }
+                throw new FreeTimeException("Задача пересекается по времени с другими и не может быть модифицирована");
             }
         }
     }
@@ -291,38 +274,33 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void fillEndTimeOfEpic(int epicId) {
+        LocalDateTime minStartTime = null;
+        LocalDateTime maxEndTime = null;
+        Duration sumDurationSub = Duration.ZERO;
         EpicTask epicTask = storingEpic.get(epicId);
-        if (epicTask.getSubtaskList().size() < 1) {
-            epicTask.setStartTime(null);
-            epicTask.setDuration(Duration.ZERO);
-            epicTask.setEndTime(epicTask.getEndTime());
-            return;
-        }
         for (Integer subId : epicTask.getSubtaskList()) {
             Subtask subtask = storingSubtask.get(subId);
             if (epicTask.getSubtaskList().size() == 1) {
-                if (subtask.getStartTime() == null) {
-                    epicTask.setStartTime(null);
-                    epicTask.setDuration(Duration.ZERO);
-                    epicTask.setEndTime(epicTask.getEndTime());
-                    return;
-                }
-                epicTask.setDuration(subtask.getDuration());
-                epicTask.setStartTime(subtask.getStartTime());
-                epicTask.setEndTime(epicTask.getEndTime());
+                minStartTime = subtask.getStartTime();
+                sumDurationSub = subtask.getDuration();
+                maxEndTime = subtask.getEndTime();
             } else {
                 if (subtask.getStartTime() == null) {
-                    return;
+                    sumDurationSub = sumDurationSub.plus(subtask.getDuration());
+                    continue;
                 }
-                if (subtask.getStartTime().isBefore(epicTask.getStartTime())) {
-                    epicTask.setStartTime(subtask.getStartTime());
+                if (subtask.getStartTime() != null || subtask.getStartTime().isBefore(minStartTime)) {
+                    minStartTime = subtask.getStartTime();
                 }
-                if (subtask.getEndTime().isAfter(epicTask.getStartTime().plus(epicTask.getDuration()))) {
-                    epicTask.setDuration(Duration.between(epicTask.getStartTime(), subtask.getEndTime()));
+                if (subtask.getEndTime() != null || subtask.getEndTime().isAfter(maxEndTime)) {
+                    maxEndTime = subtask.getEndTime();
                 }
-                epicTask.setEndTime(epicTask.getEndTime());
+                sumDurationSub = sumDurationSub.plus(subtask.getDuration());
             }
         }
+        epicTask.setStartTime(minStartTime);
+        epicTask.setDuration(sumDurationSub);
+        epicTask.setEndTime(maxEndTime);
     }
 
     @Override
@@ -333,23 +311,19 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean checkingFreeTime(Task task) {
         int count = 0;
-        if (task.getStartTime() == null) {
+        if (task.getStartTime() == null || getPrioritizedTasks().size() == 0) {
             return true;
         }
         for (Task prioritizedTask : getPrioritizedTasks()) {
-            if (getPrioritizedTasks().size() > 0) {
-                if (prioritizedTask.getStartTime() == null) {
-                    continue;
+            if (prioritizedTask.getStartTime() == null) {
+                continue;
+            }
+            if (!(task.getStartTime().isAfter(prioritizedTask.getEndTime())
+                    || task.getEndTime().isBefore(prioritizedTask.getStartTime()))) {
+                count++;
+                if (task.getIdTask() == prioritizedTask.getIdTask()) {
+                    count--;
                 }
-                if (!(task.getStartTime().isAfter(prioritizedTask.getEndTime())
-                        || task.getEndTime().isBefore(prioritizedTask.getStartTime()))) {
-                    count++;
-                    if (task.getIdTask() == prioritizedTask.getIdTask()) {
-                        count--;
-                    }
-                }
-            } else {
-                return true;
             }
         }
         if (count == 0) {
