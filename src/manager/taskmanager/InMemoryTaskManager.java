@@ -295,18 +295,21 @@ public class InMemoryTaskManager implements TaskManager {
         if (epicTask.getSubtaskList().size() < 1) {
             epicTask.setStartTime(null);
             epicTask.setDuration(Duration.ZERO);
+            epicTask.setEndTime(epicTask.getEndTime());
             return;
         }
         for (Integer subId : epicTask.getSubtaskList()) {
             Subtask subtask = storingSubtask.get(subId);
             if (epicTask.getSubtaskList().size() == 1) {
                 if (subtask.getStartTime() == null) {
-                    epicTask.setStartTime(LocalDateTime.now().plusYears(1));
+                    epicTask.setStartTime(null);
                     epicTask.setDuration(Duration.ZERO);
+                    epicTask.setEndTime(epicTask.getEndTime());
                     return;
                 }
                 epicTask.setDuration(subtask.getDuration());
                 epicTask.setStartTime(subtask.getStartTime());
+                epicTask.setEndTime(epicTask.getEndTime());
             } else {
                 if (subtask.getStartTime() == null) {
                     return;
@@ -317,6 +320,7 @@ public class InMemoryTaskManager implements TaskManager {
                 if (subtask.getEndTime().isAfter(epicTask.getStartTime().plus(epicTask.getDuration()))) {
                     epicTask.setDuration(Duration.between(epicTask.getStartTime(), subtask.getEndTime()));
                 }
+                epicTask.setEndTime(epicTask.getEndTime());
             }
         }
     }

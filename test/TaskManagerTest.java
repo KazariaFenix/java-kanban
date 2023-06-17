@@ -175,6 +175,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createSimpleTask(simpleTask);
         final SimpleTask newSimple = taskManager.getIdSimple(simpleTask.getIdTask());
 
+        taskManager.getIdSimple(simpleTask.getIdTask());
         assertNotNull(newSimple, "Задача не найдена");
         assertEquals(newSimple, simpleTask, "Задачи не совпадают");
         final List<SimpleTask> listSimple = taskManager.getSimpleTask();
@@ -182,6 +183,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertNotNull(listSimple, "Список простых задач не найден");
         assertEquals(1 ,listSimple.size(), "Неверное количество задач");
         assertEquals(simpleTask, listSimple.get(0), "Задачи не совпадают");
+        assertEquals(taskManager.getHistoryManager().size(), 1, "Неверное сохранение истории");
     }
 
     @Test
@@ -192,6 +194,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createEpicTask(epicTask);
         final EpicTask newEpic = taskManager.getIdEpic(epicTask.getIdTask());
 
+        taskManager.getIdEpic(epicTask.getIdTask());
         assertNotNull(newEpic, "Задача не найдена");
         assertEquals(epicTask, newEpic, "Задачи не совпадают");
         final List<EpicTask> listEpic = taskManager.getEpicTask();
@@ -199,6 +202,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertNotNull(listEpic, "Список эпик задач не найден");
         assertEquals(1 ,listEpic.size(), "Неверное количество задач");
         assertEquals(epicTask, listEpic.get(0), "Задачи не совпадают");
+        assertEquals(taskManager.getHistoryManager().size(), 1, "Неверное сохранение истории");
     }
 
     @Test
@@ -211,6 +215,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
                 Duration.ofMinutes(5), LocalDateTime.now(), epicTask.getIdTask());
 
         taskManager.createSubtask(subtask);
+        taskManager.getIdSub(subtask.getIdTask());
         assertEquals(subtask.getIdTask(), epicTask.getSubtaskList().get(0), "Задача не в списке Эпика");
         assertEquals(epicTask.getStatusTask(), StatusTask.IN_PROGRESS, "Неверно рассчитан статус Эпика");
         final Subtask newSub = taskManager.getIdSub(subtask.getIdTask());
@@ -222,6 +227,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertNotNull(listSub, "Список подзадач не найден");
         assertEquals(1 ,listSub.size(), "Неверное количество задач");
         assertEquals(subtask, listSub.get(0), "Задачи не совпадают");
+        assertEquals(taskManager.getHistoryManager().size(), 1, "Неверное сохранение истории");
     }
 
     @Test
@@ -473,5 +479,6 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.deleteIdSimple(simpleTask.getIdTask());
         assertEquals(taskManager.getSimpleTask().size(), taskManager.getPrioritizedTasks().size(),
                 "История не удалилась полностью");
+        assertEquals(taskManager.getHistoryManager().size(), 0, "Неверное сохранение истории");
     }
 }

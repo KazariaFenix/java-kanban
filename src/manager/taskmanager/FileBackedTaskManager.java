@@ -240,8 +240,4 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
         return simpleTask;
     }
-
-    public Path getPath() {
-        return path;
-    }
 }

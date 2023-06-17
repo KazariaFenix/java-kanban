@@ -1,4 +1,6 @@
+import manager.Managers;
 import manager.taskmanager.InMemoryTaskManager;
+import manager.taskmanager.TaskManager;
 import model.EpicTask;
 import model.SimpleTask;
 import model.StatusTask;
@@ -33,5 +35,12 @@ public class InMemoryTaskManagerTest extends TaskManagerTest <InMemoryTaskManage
 
         taskManager.createSubtask(subtask);
         assertEquals(epicTask.getSubtaskList().size(), 0, "Добавилась неподходящая история");
+    }
+
+    @Test
+    public void whenEqualsClearManager() {
+        TaskManager newTasKManager = Managers.getDefault();
+        assertEquals(newTasKManager.hashCode(), taskManager.hashCode(), "Менеджеры не совпадают");
+        assertTrue(newTasKManager.equals(taskManager), "Менеджеры создаются разными");
     }
 }

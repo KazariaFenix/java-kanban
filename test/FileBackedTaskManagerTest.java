@@ -67,7 +67,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskMa
         FileBackedTaskManager newTaskManager = FileBackedTaskManager.loadFromFile("resources\\SaveData.csv");
 
         assertNotNull(newTaskManager, "Файлы не сохранились или не загрузились");
-        assertEquals(newTaskManager, taskManager,
+        assertEquals(newTaskManager.hashCode(), taskManager.hashCode(), "Хэшкоды не совпадают");
+        assertTrue(newTaskManager.equals(taskManager),
                 "Файлы сохранились или загрузились не верно");
     }
 
@@ -88,7 +89,10 @@ public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskMa
         FileBackedTaskManager newTaskManager = FileBackedTaskManager.loadFromFile("resources\\SaveData.csv");
 
         assertNotNull(newTaskManager, "Файлы не сохранились или не загрузились");
-        assertEquals(newTaskManager.getEpicTask(), taskManager.getEpicTask(), "Файлы сохранились или загрузились не верно");
+        assertEquals(newTaskManager.getEpicTask(), taskManager.getEpicTask(),
+                "Файлы сохранились или загрузились не верно");
+        assertEquals(taskManager.getEpicTask().get(0).getEndTime(), newTaskManager.getEpicTask().get(0).getEndTime(),
+                "Неправильный расчет времени продолжительности эпика");
     }
 
     @Test

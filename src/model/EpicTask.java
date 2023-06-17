@@ -7,12 +7,13 @@ import java.util.List;
 
 public class EpicTask extends Task {
     private List<Integer> subtaskList = new ArrayList<>();
+    private LocalDateTime endTime;
 
     public EpicTask(String nameTask, String descriptionTask, int idTask, StatusTask statusTask, Duration duration,
                     LocalDateTime localDateTime) {
-        super(nameTask, descriptionTask, idTask, statusTask, duration, localDateTime);//про поле endTime в задании
-    }//говорилось,про удобство. На мой взгляд добавлять поле только в один класс наследник, хотя по сути оно есть
-    // у всех, крайне неудобно.
+        super(nameTask, descriptionTask, idTask, statusTask, duration, localDateTime);
+    }
+
     public List<Integer> getSubtaskList() {
         return subtaskList;
     }
@@ -30,5 +31,16 @@ public class EpicTask extends Task {
     }
     public void clearSubtaskList() {
         subtaskList.clear();
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                "endTime=" + endTime +
+                '}';
     }
 }
