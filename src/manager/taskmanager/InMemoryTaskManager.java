@@ -153,12 +153,14 @@ public class InMemoryTaskManager implements TaskManager {
         if (storingSimple.containsKey(simpleId)) {
             listPriority.remove(storingSimple.get(simpleId));
             storingSimple.remove(simpleId);
+            historyManager.remove(simpleId);
+        } else {
+            throw new NullPointerException("Вы пытались удалить задачу с неверным идентификатором");
         }
-        historyManager.remove(simpleId);
     }
 
     @Override
-    public void deleteIdEpicTask(int epicId) {
+    public void deleteIdEpicTask(int epicId) throws NullPointerException {
         if (storingEpic.containsKey(epicId)) {
             EpicTask epicTask = storingEpic.get(epicId);
             for (Integer subId : epicTask.getSubtaskList()) {
@@ -169,6 +171,8 @@ public class InMemoryTaskManager implements TaskManager {
             epicTask.clearSubtaskList();
             storingEpic.remove(epicId);
             historyManager.remove(epicId);
+        } else {
+            throw new NullPointerException("Вы пытались удалить задачу с неверным идентификатором");
         }
     }
 
@@ -183,6 +187,8 @@ public class InMemoryTaskManager implements TaskManager {
             fillEpicStatus(subtask.getEpicId());
             fillEndTimeOfEpic(epicTask.getIdTask());
             historyManager.remove(subId);
+        } else {
+            throw new NullPointerException("Вы пытались удалить задачу с неверным идентификатором");
         }
     }
 
@@ -278,24 +284,26 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime maxEndTime = null;
         Duration sumDurationSub = Duration.ZERO;
         EpicTask epicTask = storingEpic.get(epicId);
-        for (Integer subId : epicTask.getSubtaskList()) {
-            Subtask subtask = storingSubtask.get(subId);
-            if (epicTask.getSubtaskList().size() == 1) {
-                minStartTime = subtask.getStartTime();
-                sumDurationSub = subtask.getDuration();
-                maxEndTime = subtask.getEndTime();
-            } else {
-                if (subtask.getStartTime() == null) {
-                    sumDurationSub = sumDurationSub.plus(subtask.getDuration());
-                    continue;
-                }
-                if (subtask.getStartTime() != null || subtask.getStartTime().isBefore(minStartTime)) {
+        if (epicTask.getSubtaskList() != null) {
+            for (Integer subId : epicTask.getSubtaskList()) {
+                Subtask subtask = storingSubtask.get(subId);
+                if (epicTask.getSubtaskList().size() == 1) {
                     minStartTime = subtask.getStartTime();
-                }
-                if (subtask.getEndTime() != null || subtask.getEndTime().isAfter(maxEndTime)) {
+                    sumDurationSub = subtask.getDuration();
                     maxEndTime = subtask.getEndTime();
+                } else {
+                    if (subtask.getStartTime() == null) {
+                        sumDurationSub = sumDurationSub.plus(subtask.getDuration());
+                        continue;
+                    }
+                    if (subtask.getStartTime() != null || subtask.getStartTime().isBefore(minStartTime)) {
+                        minStartTime = subtask.getStartTime();
+                    }
+                    if (subtask.getEndTime() != null || subtask.getEndTime().isAfter(maxEndTime)) {
+                        maxEndTime = subtask.getEndTime();
+                    }
+                    sumDurationSub = sumDurationSub.plus(subtask.getDuration());
                 }
-                sumDurationSub = sumDurationSub.plus(subtask.getDuration());
             }
         }
         epicTask.setStartTime(minStartTime);

@@ -7,7 +7,6 @@ import model.Subtask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -17,7 +16,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskMa
 
     @BeforeEach
     public void createObjectFileBacked() {
-        taskManager = new FileBackedTaskManager(Paths.get("resources\\SaveData.csv"));
+        taskManager = new FileBackedTaskManager("resources\\SaveData.csv");
     }
 
     @Test

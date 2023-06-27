@@ -15,26 +15,15 @@ import java.util.List;
 import static java.nio.file.StandardOpenOption.APPEND;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private Path path;
+    private String address;
 
-    public FileBackedTaskManager(Path path) {
-        this.path = path;
-    }
-
-    public static void main(String[] args) {
-        FileBackedTaskManager file = loadFromFile("resources" +
-                "\\SaveData.csv");
-
-        //System.out.println(file.storingEpic);
-        //System.out.println(file.historyManager.getHistory());
-        System.out.println(file.getPrioritizedTasks());
-        //System.out.println(file.timeMap);
-
+    public FileBackedTaskManager(String address) {
+        this.address = address;
     }
 
     public static FileBackedTaskManager loadFromFile(String address) {
         Path pathOfFile = Path.of(address);
-        FileBackedTaskManager file = new FileBackedTaskManager(pathOfFile);
+        FileBackedTaskManager file = new FileBackedTaskManager(address);
         try {
             List<String> lines = Files.readAllLines(pathOfFile);
             file.load(lines);
@@ -44,7 +33,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private void load(List<String> lines) {
+    private void load(List<String> lines) throws IOException{
         for (int i = 1; i < lines.size() - 1; i++) {
                 Task task = fromString(lines.get(i));
                 if (task != null && id <= task.getIdTask()) {
@@ -63,7 +52,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private void save() {
+    protected void save() {
+        Path path = Path.of(address);
         try {
             Files.deleteIfExists(path);
             Files.createFile(path);
@@ -83,7 +73,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private static String historyToString(HistoryManager manager) {
+    protected static String historyToString(HistoryManager manager) {
         List<String> stringId = new ArrayList<>();
         for (Task task : manager.getHistory()) {
             stringId.add(Integer.toString(task.getIdTask()));
@@ -92,7 +82,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return listId;
     }
 
-    private static List<Integer> historyFromString(String value) {
+    protected static List<Integer> historyFromString(String value) {
         String[] arrayId = value.split(",");
         List<Integer> saveHistory = new ArrayList<>();
         for (String s : arrayId) {
@@ -104,7 +94,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return saveHistory;
     }
 
-    private Task fromString(String value) {
+    protected Task fromString(String value) throws IOException {
         String[] values = value.split(",");
         if (values.length >= 7) {
             if (values[6].equals("null")) {

@@ -22,7 +22,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest <InMemoryTaskManage
 
     @Test
     public void whenEqualsClearManager() {
-        TaskManager newTaskManager = Managers.getDefault();
+        TaskManager newTaskManager = new InMemoryTaskManager();
         assertEquals(newTaskManager.hashCode(), taskManager.hashCode(), "Менеджеры не совпадают");
         assertTrue(newTaskManager.equals(taskManager), "Менеджеры создаются разными");
     }
