@@ -347,12 +347,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (o == null || getClass() != o.getClass()) return false;
         InMemoryTaskManager that = (InMemoryTaskManager) o;
         return id == that.id && Objects.equals(storingSimple, that.storingSimple)
-                && Objects.equals(storingEpic, that.storingEpic) && Objects.equals(storingSubtask, that.storingSubtask)
+                && Objects.equals(storingEpic, that.storingEpic) && Objects.equals(listPriority, that.listPriority)
+                && Objects.equals(storingSubtask, that.storingSubtask)
                 && Objects.equals(historyManager.getHistory(), that.historyManager.getHistory());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storingSimple, storingEpic, storingSubtask, historyManager.getHistory(), id);
+        return Objects.hash(storingSimple, storingEpic, listPriority, storingSubtask, historyManager.getHistory(), id);
     }
 }

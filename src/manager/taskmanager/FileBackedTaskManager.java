@@ -21,19 +21,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.address = address;
     }
 
-    public static FileBackedTaskManager loadFromFile(String address) {
+    public static FileBackedTaskManager load(String address) {
         Path pathOfFile = Path.of(address);
         FileBackedTaskManager file = new FileBackedTaskManager(address);
         try {
             List<String> lines = Files.readAllLines(pathOfFile);
-            file.load(lines);
+            file.loadFromFile(lines);
             return file;
         } catch (IOException e) {
             throw new ManagerSaveException();
         }
     }
 
-    private void load(List<String> lines) throws IOException{
+    private void loadFromFile(List<String> lines) throws IOException{
         for (int i = 1; i < lines.size() - 1; i++) {
                 Task task = fromString(lines.get(i));
                 if (task != null && id <= task.getIdTask()) {

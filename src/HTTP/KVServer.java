@@ -39,7 +39,7 @@ public class KVServer {
             if ("GET".equals(h.getRequestMethod())) {
                 String key = h.getRequestURI().getPath().substring("/load/".length());
                 if (key.isEmpty()) {
-                    System.out.println("Key для сохранения пустой. key указывается в пути: /save/{key}");
+                    System.out.println("Key для загрузки пустой. key указывается в пути: /load/{key}");
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
@@ -125,5 +125,9 @@ public class KVServer {
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);
+    }
+
+    public void stop() {
+        server.stop(1);
     }
 }

@@ -26,7 +26,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskMa
 
         taskManager.createSimpleTask(simpleTask);
         taskManager.deleteIdSimple(simpleTask.getIdTask());
-        FileBackedTaskManager newManager = FileBackedTaskManager.loadFromFile("resources\\SaveData.csv");
+        FileBackedTaskManager newManager = FileBackedTaskManager.load("resources\\SaveData.csv");
         assertNotNull(newManager, "Менеджер не создался");
         assertEquals(newManager.getEpicTask().size(), 0, "Неизвестные задачи загрузились");
         assertEquals(newManager.getSubtask().size(), 0, "Неизвестные задачи загрузились");
@@ -50,7 +50,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskMa
         taskManager.getIdEpic(epicTask.getIdTask());
         taskManager.getIdSimple(simpleTask.getIdTask());
         taskManager.getIdSub(subtask.getIdTask());
-        FileBackedTaskManager newTaskManager = FileBackedTaskManager.loadFromFile("resources\\SaveData.csv");
+        FileBackedTaskManager newTaskManager = FileBackedTaskManager.load("resources\\SaveData.csv");
 
         assertNotNull(newTaskManager, "Файлы не сохранились или не загрузились");
         assertEquals(newTaskManager, taskManager, "Файлы сохранились или загрузились не верно");
@@ -63,7 +63,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskMa
 
         taskManager.createEpicTask(epicTask);
         taskManager.getIdEpic(epicTask.getIdTask());
-        FileBackedTaskManager newTaskManager = FileBackedTaskManager.loadFromFile("resources\\SaveData.csv");
+        FileBackedTaskManager newTaskManager = FileBackedTaskManager.load("resources\\SaveData.csv");
 
         assertNotNull(newTaskManager, "Файлы не сохранились или не загрузились");
         assertEquals(newTaskManager.hashCode(), taskManager.hashCode(), "Хэшкоды не совпадают");
@@ -85,7 +85,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskMa
                 Duration.ofMinutes(16), LocalDateTime.now().plusMinutes(15), epicTask.getIdTask());
 
         taskManager.createSubtask(subtask);
-        FileBackedTaskManager newTaskManager = FileBackedTaskManager.loadFromFile("resources\\SaveData.csv");
+        FileBackedTaskManager newTaskManager = FileBackedTaskManager.load("resources\\SaveData.csv");
 
         assertNotNull(newTaskManager, "Файлы не сохранились или не загрузились");
         assertEquals(newTaskManager.getEpicTask(), taskManager.getEpicTask(),
@@ -98,7 +98,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest <FileBackedTaskMa
     public void whenSaveAndLoadWrongWay() {
         ManagerSaveException exp = assertThrows(
                 ManagerSaveException.class,
-                (() -> FileBackedTaskManager.loadFromFile("wrongway"))
+                (() -> FileBackedTaskManager.load("wrongway"))
         );
     }
 }
