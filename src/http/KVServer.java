@@ -1,4 +1,4 @@
-package HTTP;
+package http;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import manager.exception.ManagerSaveException;
 
 /**
  * Постман: https://www.getpostman.com/collections/a83b61d9e1c81c10575c
@@ -27,7 +28,7 @@ public class KVServer {
         server.createContext("/load", this::load);
     }
 
-    private void load(HttpExchange h) throws IOException {
+    private void load(HttpExchange h) {
         // TODO Добавьте получение значения по ключу
         try {
             System.out.println("\n/load");
@@ -48,12 +49,14 @@ public class KVServer {
                 System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
+        }catch(IOException e){
+            throw new ManagerSaveException("Ошибка на сервере при загрузке данных");
         } finally {
             h.close();
         }
     }
 
-    private void save(HttpExchange h) throws IOException {
+    private void save(HttpExchange h) {
         try {
             System.out.println("\n/save");
             if (!hasAuth(h)) {
@@ -81,12 +84,14 @@ public class KVServer {
                 System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
+        }catch(IOException e){
+            throw new ManagerSaveException("Ошибка на сервере при сохранении данных");
         } finally {
             h.close();
         }
     }
 
-    private void register(HttpExchange h) throws IOException {
+    private void register(HttpExchange h) {
         try {
             System.out.println("\n/register");
             if ("GET".equals(h.getRequestMethod())) {
@@ -95,6 +100,8 @@ public class KVServer {
                 System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
+        }catch(IOException e){
+            throw new ManagerSaveException("Ошибка на сервере при регистрации менеджера");
         } finally {
             h.close();
         }

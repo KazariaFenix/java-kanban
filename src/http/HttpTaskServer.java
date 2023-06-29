@@ -1,4 +1,4 @@
-package HTTP;
+package http;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
@@ -23,16 +23,13 @@ public class HttpTaskServer {
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final HttpServer httpServer;
     private HttpTaskManager taskManager;
+    final Gson gson = new Gson();
 
     public HttpTaskServer() throws IOException, InterruptedException {
         httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", this::handle);
-        //httpServer.start();
         taskManager = Managers.getDefault();
     }
-
-    final Gson gson = new Gson();
-
 
     public void handle(HttpExchange exchange) throws IOException {
         Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath()

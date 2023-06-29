@@ -1,16 +1,12 @@
 package manager.taskmanager;
 
-import HTTP.KVTaskClient;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import http.KVTaskClient;
+import manager.exception.ManagerSaveException;
 import manager.historymanagers.HistoryManager;
 import model.*;
 
-import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,28 +15,27 @@ import java.util.List;
 
 public class HttpTaskManager extends FileBackedTaskManager {
     private KVTaskClient kvTaskClient;
-    Gson gson = new Gson();
-    String key;
+    private Gson gson;
+    private String key;
 
-    public HttpTaskManager(String uri) throws IOException, InterruptedException {
+    public HttpTaskManager(String uri) {
         super(uri);
         kvTaskClient = new KVTaskClient(URI.create(uri));
-        key = getKvTaskClient().getAPI_token();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.serializeNulls();
+        gson = gsonBuilder.create();
+        key = "manager";
     }
 
-    public static HttpTaskManager load(String key, HttpTaskManager manager) {
-        try {
-            String taskManager = manager.getKvTaskClient().load(key);
-            String[] values = taskManager.split("\\n");
-            manager.loadFromServer(values);
-            return manager;
-        } catch (IOException | InterruptedException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+    public static HttpTaskManager load(String key) {
+        HttpTaskManager manager = new HttpTaskManager("http://localhost:8081/register");
+        String taskManager = manager.getKvTaskClient().load(key);
+        String[] values = taskManager.split("\\n");
+        manager.loadFromServer(values);
+        return manager;
     }
 
-    private void loadFromServer(String[] values) throws IOException {
+    private void loadFromServer(String[] values) {
         for (int i = 0; i < values.length - 1; i++) {
             if (!values[i].isBlank()) {
                 Task task = fromString(values[i]);
@@ -78,11 +73,7 @@ public class HttpTaskManager extends FileBackedTaskManager {
             managerToJson += gson.toJson(subtask) + "\n";
         }
         managerToJson += "\n " + historyToString(historyManager);
-        try {
-            kvTaskClient.put(key, managerToJson);
-        } catch (IOException | InterruptedException e) {
-            System.out.println(e.getMessage());
-        }
+        kvTaskClient.put(key, managerToJson);
     }
 
     protected static List<Integer> historyFromString(String value) {
@@ -110,10 +101,10 @@ public class HttpTaskManager extends FileBackedTaskManager {
     }
 
     @Override
-    protected Task fromString(String value) throws IOException {
+    protected Task fromString(String value) {
         JsonElement jsonElement = JsonParser.parseString(value);
         if (!jsonElement.isJsonObject()) {
-            throw new IOException("Неверное данные для восстановления задачи");
+            throw new ManagerSaveException("Невернsе данные для восстановления задачи");
         }
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         if (jsonObject.has("epicId")) {
@@ -126,20 +117,11 @@ public class HttpTaskManager extends FileBackedTaskManager {
             createSubtask(subtask);
             return subtask;
         } else if (jsonObject.has("subtaskList")) {
-            EpicTask epicTask = null;
-            if (jsonObject.get("startTime") != null && jsonObject.get("startTime").isJsonNull()) {
-                epicTask = new EpicTask(jsonObject.get("nameTask").getAsString(),
-                        jsonObject.get("descriptionTask").getAsString(), jsonObject.get("idTask").getAsInt(),
-                        StatusTask.valueOf(jsonObject.get("statusTask").getAsString()),
-                        gson.fromJson(jsonObject.get("duration").getAsJsonObject(), Duration.class),
-                        gson.fromJson(jsonObject.get("startTime").getAsJsonObject(), LocalDateTime.class));
-            } else {
-                epicTask = new EpicTask(jsonObject.get("nameTask").getAsString(),
-                        jsonObject.get("descriptionTask").getAsString(), jsonObject.get("idTask").getAsInt(),
-                        StatusTask.valueOf(jsonObject.get("statusTask").getAsString()),
-                        gson.fromJson(jsonObject.get("duration").getAsJsonObject(), Duration.class),
-                        null);
-            }
+            EpicTask epicTask = new EpicTask(jsonObject.get("nameTask").getAsString(),
+                    jsonObject.get("descriptionTask").getAsString(), jsonObject.get("idTask").getAsInt(),
+                    StatusTask.valueOf(jsonObject.get("statusTask").getAsString()),
+                    gson.fromJson(jsonObject.get("duration").getAsJsonObject(), Duration.class),
+                    null);
             createEpicTask(epicTask);
             return epicTask;
         } else {

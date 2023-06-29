@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class HistoryManagerTest <T extends HistoryManagerTest> {
+public class HistoryManagerTest {
     HistoryManager historyManager;
     SimpleTask simpleTask;
     EpicTask epicTask;

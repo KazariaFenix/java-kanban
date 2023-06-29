@@ -1,7 +1,6 @@
-import HTTP.HttpTaskServer;
-import HTTP.KVServer;
+import http.HttpTaskServer;
+import http.KVServer;
 import com.google.gson.Gson;
-import manager.taskmanager.HttpTaskManager;
 import model.EpicTask;
 import model.SimpleTask;
 import model.StatusTask;

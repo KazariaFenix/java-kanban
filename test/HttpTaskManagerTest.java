@@ -1,6 +1,7 @@
-import HTTP.HttpTaskServer;
-import HTTP.KVServer;
+import http.HttpTaskServer;
+import http.KVServer;
 import com.google.gson.Gson;
+import manager.exception.ManagerSaveException;
 import manager.taskmanager.HttpTaskManager;
 import model.EpicTask;
 import model.SimpleTask;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -740,8 +740,7 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         HttpResponse<String> response11 = client.send(request11, HttpResponse.BodyHandlers.ofString());
 
         HttpTaskManager newManager = HttpTaskManager
-                .load(taskManager.getKvTaskClient().getAPI_token(),
-                        new HttpTaskManager("http://localhost:8081/register"));
+                .load("manager");
         assertEquals(newManager, taskManager);
     }
 
@@ -787,8 +786,7 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         HttpResponse<String> response6 = client.send(request6, HttpResponse.BodyHandlers.ofString());
 
         HttpTaskManager newManager = HttpTaskManager
-                .load(taskManager.getKvTaskClient().getAPI_token(),
-                        new HttpTaskManager("http://localhost:8081/register"));
+                .load("manager");
         assertEquals(newManager, taskManager);
     }
 
@@ -821,18 +819,16 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         HttpResponse<String> response9 = client.send(request9, HttpResponse.BodyHandlers.ofString());
 
         HttpTaskManager newManager = HttpTaskManager
-                .load(taskManager.getKvTaskClient().getAPI_token(),
-                        new HttpTaskManager("http://localhost:8081/register"));
+                .load("manager");
         assertEquals(newManager, taskManager);
     }
 
     @Test
     public void saveAndLoadWrongWay() {
-        IllegalArgumentException exp = assertThrows(
-                IllegalArgumentException.class,
+        ManagerSaveException exp = assertThrows(
+                ManagerSaveException.class,
                 () -> HttpTaskManager
-                        .load(taskManager.getKvTaskClient().getAPI_token(),
-                                new HttpTaskManager("fhjdfhdfjjdfj"))
+                        .load("manager")
         );
     }
 }

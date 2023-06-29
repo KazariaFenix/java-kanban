@@ -1,4 +1,4 @@
-package HTTP;
+package http;
 
 public enum Endpoint {
     POST_ADD_OR_UPDATE_SIMPLETASK,

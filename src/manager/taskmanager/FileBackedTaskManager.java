@@ -29,7 +29,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             file.loadFromFile(lines);
             return file;
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка при загрузке данных");
         }
     }
 
@@ -69,7 +69,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
             Files.writeString(path, "\n" + historyToString(historyManager), APPEND);
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка при сохранении данных");
         }
     }
 
